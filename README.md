@@ -18,10 +18,10 @@ Published site: <https://seafood-hazards.github.io/multised-slim/>
 
 - [R](https://www.r-project.org/) 4.1 or newer (the code uses the native `|>` pipe)
 - [Quarto](https://quarto.org/docs/get-started/) 1.4 or newer
-- The R packages used by the pages:
+- The R packages Quarto's knitr engine and the pages need:
 
   ```r
-  install.packages(c("DBI", "RSQLite", "dplyr", "tidyr", "tibble", "knitr"))
+  install.packages(c("rmarkdown", "knitr", "DBI", "RSQLite", "dplyr", "tidyr", "tibble"))
   ```
 
 ### 2. Download the databases
