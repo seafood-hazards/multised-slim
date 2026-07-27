@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Sample Fraction (matrix) – multised (slim)</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b3fa5ccbb8ed2e194b31985f2da5f38.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">multised (slim)</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-db-design" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">DB Design</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-db-design">    
+        <li>
+    <a class="dropdown-item" href="./db-schema-slim.html">
+ <span class="dropdown-text">DB Schema (Slim)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./db-schema-clean.html">
+ <span class="dropdown-text">DB Schema (Clean)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./database-downloads.html">
+ <span class="dropdown-text">Database Downloads</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-flagging" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Flagging</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-flagging">    
+        <li>
+    <a class="dropdown-item" href="./class-summary.html">
+ <span class="dropdown-text">Class Summary</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./flagging-conversion-range.html">
+ <span class="dropdown-text">Unit Conversion &amp; Range Check</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./flagging-common.html">
+ <span class="dropdown-text">Common Flags</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./flagging-source-specific.html">
+ <span class="dropdown-text">Source Specific</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-grain-size" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Grain Size</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-grain-size">    
+        <li>
+    <a class="dropdown-item" href="./grain-size-fraction.html">
+ <span class="dropdown-text">Sample Fraction (matrix)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./grain-size-fines.html">
+ <span class="dropdown-text">Fines (&lt;63 µm)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-clean-databases" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Clean Databases</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-clean-databases">    
+        <li>
+    <a class="dropdown-item" href="./clean-overview.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./clean-harmonisation.html">
+ <span class="dropdown-text">Harmonisation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./clean-cleaning.html">
+ <span class="dropdown-text">Cleaning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./clean-grain-size.html">
+ <span class="dropdown-text">Grain-size Tables</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./clean-cleaning-summary.html">
+ <span class="dropdown-text">Cleaning Summary</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/seafood-hazards/multised-slim"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-the-matrix-codes-mean" id="toc-what-the-matrix-codes-mean" class="nav-link active" data-scroll-target="#what-the-matrix-codes-mean">1. What the matrix codes mean</a></li>
+  <li><a href="#harmonised-sieved-bulk-class" id="toc-harmonised-sieved-bulk-class" class="nav-link" data-scroll-target="#harmonised-sieved-bulk-class">2. Harmonised sieved / bulk class</a></li>
+  <li><a href="#fraction-by-source-and-measurement-class" id="toc-fraction-by-source-and-measurement-class" class="nav-link" data-scroll-target="#fraction-by-source-and-measurement-class">3. Fraction by source and measurement class</a></li>
+  <li><a href="#chemistry-sieve-cutoffs" id="toc-chemistry-sieve-cutoffs" class="nav-link" data-scroll-target="#chemistry-sieve-cutoffs">4. Chemistry sieve cutoffs</a></li>
+  <li><a href="#the-fraction-differs-between-chemistry-and-grain-size" id="toc-the-fraction-differs-between-chemistry-and-grain-size" class="nav-link" data-scroll-target="#the-fraction-differs-between-chemistry-and-grain-size">5. The fraction differs between chemistry and grain-size</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Sample Fraction (matrix)</h1>
+<p class="subtitle lead">What sediment fraction each measurement was made on, and how sieved and bulk samples are told apart</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<style type="text/css">
+th { white-space: nowrap; }
+</style>
+</div>
+<p>Sediment can be analysed <strong>whole</strong> (a bulk grab) or after <strong>sieving</strong> to a grain-size fraction, and a trace-element value means something different depending on which. Three sources record this on each measurement in a <code>matrix</code> column: <strong>ICES-DOME</strong>, <strong>MUDAB</strong>, and <strong>4Demon</strong>. Mareano and Vannmiljø have no <code>matrix</code>; for those the fraction has to come from the grain-size measurements themselves (a later page).</p>
+<p>This page reads the raw <code>matrix</code> values, harmonises them into a common sieved/bulk class with a sieve cutoff in micrometres, and shows an important subtlety: within one sample the chemistry and the grain-size are usually measured on <strong>different</strong> fractions.</p>
+<section id="what-the-matrix-codes-mean" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-matrix-codes-mean">1. What the matrix codes mean</h2>
+<p><strong>ICES-DOME and MUDAB</strong> use ICES <code>MATRX</code> codes of the form <code>SED&lt;mesh&gt;</code>, “sediment, the fraction finer than <code>&lt;mesh&gt;</code> micrometres” (<code>SEDtot</code> being the whole untreated sample). Meanings are from each pilot’s <code>code_lookup</code> table.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">matrix</th>
+<th style="text-align: left;">Meaning</th>
+<th style="text-align: left;">Cutoff (um)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: left;">Untreated total (whole sample)</td>
+<td style="text-align: left;">none (bulk)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED2000</td>
+<td style="text-align: left;">Finer than 2000 um</td>
+<td style="text-align: left;">2000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SED1000</td>
+<td style="text-align: left;">Finer than 1000 um</td>
+<td style="text-align: left;">1000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED500</td>
+<td style="text-align: left;">Finer than 500 um</td>
+<td style="text-align: left;">500</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SED90</td>
+<td style="text-align: left;">Finer than 90 um</td>
+<td style="text-align: left;">90</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED63</td>
+<td style="text-align: left;">Finer than 63 um</td>
+<td style="text-align: left;">63</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SED62</td>
+<td style="text-align: left;">Finer than 62 um</td>
+<td style="text-align: left;">62</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED20</td>
+<td style="text-align: left;">Finer than 20 um</td>
+<td style="text-align: left;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PK_default</td>
+<td style="text-align: left;">Placeholder, fraction not stated</td>
+<td style="text-align: left;">unspecified</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>4Demon</strong> records only <code>FS</code> (a sieved fraction) or <code>US</code> (unsieved), and keeps the actual cutoff in a separate <code>fraction_range</code> column (micrometres), which is carried through to the slim database.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">matrix</th>
+<th style="text-align: left;">fraction_range</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">US</td>
+<td style="text-align: left;">0-10000</td>
+<td style="text-align: left;">Unsieved (whole sample)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FS</td>
+<td style="text-align: left;">0-2000</td>
+<td style="text-align: left;">Sieved finer than 2000 um</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FS</td>
+<td style="text-align: left;">0-500</td>
+<td style="text-align: left;">Sieved finer than 500 um</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FS</td>
+<td style="text-align: left;">0-63</td>
+<td style="text-align: left;">Sieved finer than 63 um</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FS</td>
+<td style="text-align: left;">0-37</td>
+<td style="text-align: left;">Sieved finer than 37 um</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There is no <code>SED64</code> code in any source: the fine cutoff of interest sits at 62 to 63 micrometres (<code>SED63</code>, <code>SED62</code>, <code>FS 0-63</code>).</p>
+</section>
+<section id="harmonised-sieved-bulk-class" class="level2">
+<h2 class="anchored" data-anchor-id="harmonised-sieved-bulk-class">2. Harmonised sieved / bulk class</h2>
+<p>Every measurement is placed in one of three classes from its <code>matrix</code> (and, for 4Demon, its <code>fraction_range</code>):</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 42%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Class</th>
+<th style="text-align: left;">Definition</th>
+<th style="text-align: left;">Codes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">bulk</td>
+<td style="text-align: left;">Whole sample, or coarse sieving at or above 1000 um</td>
+<td style="text-align: left;">SEDtot, US, SED2000, SED1000, FS 0-2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sieved</td>
+<td style="text-align: left;">Sieved to a fine fraction below 1000 um</td>
+<td style="text-align: left;">SED500, SED90, SED63, SED62, SED20, FS 0-500 / 0-63 / 0-37</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">unspecified</td>
+<td style="text-align: left;">No fraction stated</td>
+<td style="text-align: left;">PK_default, missing matrix</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Coarse sieving to <code>&lt;2 mm</code> or <code>&lt;1 mm</code> (<code>SED2000</code>, <code>SED1000</code>, <code>FS 0-2000</code>) is the routine step that removes gravel and shell before analysis, not a fine-fraction separation, so it is counted as <strong>bulk-equivalent</strong> here rather than as a sieved fraction.</p>
+</div>
+</div>
+</section>
+<section id="fraction-by-source-and-measurement-class" class="level2">
+<h2 class="anchored" data-anchor-id="fraction-by-source-and-measurement-class">3. Fraction by source and measurement class</h2>
+<p>Because chemistry and grain-size are often run on different fractions (see section 5), the split is shown separately for each. Counts are measurements.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Measurement class</th>
+<th style="text-align: right;">bulk</th>
+<th style="text-align: right;">sieved</th>
+<th style="text-align: right;">unspecified</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">4Demon</td>
+<td style="text-align: left;">Chemistry</td>
+<td style="text-align: right;">1,325</td>
+<td style="text-align: right;">5,414</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ICES-DOME</td>
+<td style="text-align: left;">Chemistry</td>
+<td style="text-align: right;">40,481</td>
+<td style="text-align: right;">62,662</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ICES-DOME</td>
+<td style="text-align: left;">Grain-size</td>
+<td style="text-align: right;">54,973</td>
+<td style="text-align: right;">742</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MUDAB</td>
+<td style="text-align: left;">Chemistry</td>
+<td style="text-align: right;">7,306</td>
+<td style="text-align: right;">35,060</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MUDAB</td>
+<td style="text-align: left;">Grain-size</td>
+<td style="text-align: right;">21,161</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="chemistry-sieve-cutoffs" class="level2">
+<h2 class="anchored" data-anchor-id="chemistry-sieve-cutoffs">4. Chemistry sieve cutoffs</h2>
+<p>For the chemistry measurements, this is the actual sieve cutoff (micrometres) the element value was measured on. The <code>&lt;63 um</code> fine fraction is the one of primary interest.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Source</th>
+<th style="text-align: right;">37</th>
+<th style="text-align: right;">63</th>
+<th style="text-align: right;">500</th>
+<th style="text-align: right;">20</th>
+<th style="text-align: right;">62</th>
+<th style="text-align: right;">90</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">4Demon</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">5,144</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ICES-DOME</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">37,925</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">24,311</td>
+<td style="text-align: right;">326</td>
+<td style="text-align: right;">88</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MUDAB</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6,592</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">28,468</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Chemistry measured as <strong>bulk</strong> (whole or coarse) for comparison:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Source</th>
+<th style="text-align: right;">Bulk chemistry rows</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">4Demon</td>
+<td style="text-align: right;">1,325</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ICES-DOME</td>
+<td style="text-align: right;">40,481</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MUDAB</td>
+<td style="text-align: right;">7,306</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="the-fraction-differs-between-chemistry-and-grain-size" class="level2">
+<h2 class="anchored" data-anchor-id="the-fraction-differs-between-chemistry-and-grain-size">5. The fraction differs between chemistry and grain-size</h2>
+<p>Within a single subsample the chemistry and the grain-size are usually <strong>not</strong> on the same fraction: grain-size is almost always reported on the whole sample (<code>SEDtot</code>), while chemistry is run on a sieved fine fraction. So there is no single “matrix per sample”; the fraction has to be read per measurement, and separately for chemistry versus grain-size.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 29%">
+<col style="width: 16%">
+<col style="width: 23%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Source</th>
+<th style="text-align: right;">Subsamples with both</th>
+<th style="text-align: right;">Same matrix</th>
+<th style="text-align: right;">Different matrix</th>
+<th style="text-align: right;">% different</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ICES-DOME</td>
+<td style="text-align: right;">10,125</td>
+<td style="text-align: right;">2,421</td>
+<td style="text-align: right;">7,704</td>
+<td style="text-align: right;">76</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MUDAB</td>
+<td style="text-align: right;">5,287</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5,283</td>
+<td style="text-align: right;">100</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The most common mismatch is chemistry on a sieved fraction while the grain-size is reported on the bulk sample:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Chemistry</th>
+<th style="text-align: left;">Grain-size</th>
+<th style="text-align: right;">Subsamples</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SED20</td>
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: right;">3,855</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED20|SED2000|SED63</td>
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: right;">3,079</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SED20|SED2000</td>
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: right;">2,709</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED63</td>
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: right;">853</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SED2000</td>
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: right;">717</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED2000|SED63</td>
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: right;">695</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SED63</td>
+<td style="text-align: left;">SED63|SEDtot</td>
+<td style="text-align: right;">405</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED20</td>
+<td style="text-align: left;">SED2000</td>
+<td style="text-align: right;">173</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SED20|SED63|SEDtot</td>
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: right;">138</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SED2000|SED63|SEDtot</td>
+<td style="text-align: left;">SEDtot</td>
+<td style="text-align: right;">89</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Nothing is deleted or recomputed on this page. It only reads and classifies the recorded <code>matrix</code>. Recalculating noisy grain-size fractions, and deriving the <code>&lt;63 um</code> fraction for Mareano and Vannmiljø, come in later pages of this section.</p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

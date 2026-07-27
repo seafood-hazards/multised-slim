@@ -1,0 +1,499 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "multised (slim)",
+    "section": "",
+    "text": "multised assembles a database of marine-sediment trace-element measurements from five external sources, harmonises them into a common schema, and progressively quality-controls the result. This site documents the slim stage: five per-source databases that share one common schema, together with the quality-control and marking work performed on them."
+  },
+  {
+    "objectID": "index.html#data-sources",
+    "href": "index.html#data-sources",
+    "title": "multised (slim)",
+    "section": "Data sources",
+    "text": "Data sources\n\n\n\n\n\n\n\n\n\n\nSource\nOrigin\nNotes\n\n\n\n\nMareano\nNorway / IMR\nNorwegian cruise data.\n\n\nVannmiljø\nNorway\nNorwegian environmental monitoring.\n\n\nICES-DOME\nInternational\nRich sediment-composition data.\n\n\nMUDAB\nGermany\nGerman marine environmental database.\n\n\n4Demon\nBelgium\nCompiled historical Baltic/North Sea data (Belgian).\n\n\n\n\n\nEach source was first parsed into a per-source pilot database (documented on its own pilot site), then reshaped into the shared slim schema used here."
+  },
+  {
+    "objectID": "index.html#pipeline-generations",
+    "href": "index.html#pipeline-generations",
+    "title": "multised (slim)",
+    "section": "Pipeline generations",
+    "text": "Pipeline generations\nThe data moves through four generations, each one SQLite database per source until the final merge:\n\npilot: each source’s raw files parsed into a per-source database whose table structure follows that source. Documented on the individual pilot sites: Mareano, Vannmiljø, ICES-DOME, MUDAB, and 4Demon.\nslim (this site): every source reshaped into the same seven-table schema, then annotated with quality-control and marking flags. The underlying values are untouched; suspicious records are flagged, not deleted, so they can be reviewed.\nclean: the flags are applied (uncertain rows removed), units are harmonised, and normalisation (Fe/Al) and grain-size analyses are run.\nmerged: the five clean databases are combined into a single database for the background / pristine-sediment analysis."
+  },
+  {
+    "objectID": "index.html#what-this-site-covers",
+    "href": "index.html#what-this-site-covers",
+    "title": "multised (slim)",
+    "section": "What this site covers",
+    "text": "What this site covers\nThe slim schema, the quality-control flagging, and the construction of the clean databases are all documented here, grouped in the navigation bar:\nDB Design\n\nDB Schema (Slim): the common seven-table schema, the entity-relationship diagram, and a per-source column comparison showing which columns are shared and which are source-specific.\nDB Schema (Clean): the clean database table layout.\nDatabase Downloads: download links for the five slim SQLite databases.\n\nFlagging (the quality-control and marking work)\n\nClass Summary: the measurand categories (target, reference, organic, composition) that later steps read.\nUnit Conversion & Range Check: the standardised value/unit and the per-element plausible-range flag.\nCommon Flags: the flags shared by every source (invalid values, duplicates, below-LOQ, multi-layer, weight basis, and more).\nSource Specific: each source’s native leftover flags that the common flags do not cover.\n\nGrain Size\n\nSample Fraction (matrix): whether each sample is a whole (bulk) sediment or a sieved fraction.\nFines (&lt;63 µm): deriving the clay + silt fines fraction, including the noisy-curve correction.\n\nClean Databases (how the QC-passed end product is built)\n\nOverview: the three-step clean stage and what the cleaning removed.\nHarmonisation, Cleaning, and Grain-size Tables: the individual steps.\nCleaning Summary: chemistry counts before and after cleaning, overall and per element."
+  },
+  {
+    "objectID": "grain-size-fines.html",
+    "href": "grain-size-fines.html",
+    "title": "Fines (<63 µm)",
+    "section": "",
+    "text": "The fraction of a sediment finer than 63 µm (clay plus silt, the “mud” fraction) is a key descriptor: it governs how much surface area is available to bind trace elements, and it is the usual basis for comparing contaminant levels between samples. This page derives a single per-sample value, subsample.fines_lt63 (a percentage), from each source’s grain-size measurements, and records in fines_basis how it was obtained.\nEvery source with grain-size contributes (all but 4Demon, which carries no grain-size). The value is taken from the corrected standardised value value_std_corr (grain size to %), so mixed reporting units (%, g/kg) are handled uniformly and the grain-size curves repaired in the correction step (see below) are used."
+  },
+  {
+    "objectID": "grain-size-fines.html#how-the-fines-fraction-is-derived",
+    "href": "grain-size-fines.html#how-the-fines-fraction-is-derived",
+    "title": "Fines (<63 µm)",
+    "section": "1. How the fines fraction is derived",
+    "text": "1. How the fines fraction is derived\nEach source encodes grain-size differently, and the parameter names do not mean the same thing across sources, so the meaning of every code was checked against the pilot parameter definitions before use.\n\n\n\n\n\n\n\n\n\n\n\nSource\nCode used\nfines_lt63\nfines_basis\n\n\n\n\nMareano\nClay + Silt bins\nClay (&lt;2 µm) + Silt (2 to 63 µm)\nsum_bins\n\n\nVannmiljø\nFINS, complement, or clay+silt\nFINS, else 100 minus GSMF_63, else GSMF2 + GSMF2_63\nfins / gsmf_63_complement / clay_silt_sum\n\n\nICES-DOME\nGSMF63 on a bulk matrix\nCumulative &lt;63 µm on SEDtot, else SED2000\ngsmf63_sedtot / gsmf63_sed2000\n\n\nMUDAB\nGSMF63 on a bulk matrix\nCumulative &lt;63 µm on SEDtot, else SED2000\ngsmf63_sedtot / gsmf63_sed2000\n\n\n\n\n\nTwo points that the derivation has to get right:\n\nThe names can be reversed. In ICES-DOME and MUDAB, GSMF63 is the mass fraction finer than 63 µm (silt and clay). In Vannmiljø the similar-looking GSMF_63 is the opposite: “Particle fraction &gt;63 µm” (sand and coarser). So Vannmiljø’s fines come from FINS, and where only GSMF_63 exists the fines are 100 minus GSMF_63.\nThe fraction is relative to the matrix. A cumulative GSMF63 is the &lt;63 µm share of whatever fraction it was measured on (see the Sample Fraction page). It is taken from the whole sample (SEDtot) first, and otherwise from SED2000 / SED1000 (the &lt;2 mm / &lt;1 mm material). Values measured on an already-fine fraction (which would be near 100 %) are not used. The SED2000 based values come with the gravel caveat below.\n\n\n\n\n\n\n\nWarningThe SED2000 based fines assume negligible gravel\n\n\n\nA SED2000 value is the &lt;63 µm share of the &lt;2 mm material, not of the whole sample. Converting it to a whole-sample value would need the gravel (&gt;2 mm) proportion, but these ~2,356 subsamples (2,346 ICES-DOME, 10 MUDAB) were analysed only on the sieved &lt;2 mm fraction, so their gravel was never measured and cannot be reconciled. They are therefore taken as whole-sample fines assuming gravel is negligible (true for open marine sediment, not for gravelly or coastal sites). They carry fines_basis = 'gsmf63_sed2000', so they can be identified, down-weighted, or dropped downstream. The gsmf63_sedtot values are genuine whole-sample fines and need no such caveat."
+  },
+  {
+    "objectID": "grain-size-fines.html#correcting-noisy-grain-size-curves",
+    "href": "grain-size-fines.html#correcting-noisy-grain-size-curves",
+    "title": "Fines (<63 µm)",
+    "section": "2. Correcting noisy grain-size curves",
+    "text": "2. Correcting noisy grain-size curves\nMuch of the grain-size data outside Mareano is noisy: many curves are internally consistent (a monotone cumulative distribution) but scaled wrong, so a value that should sit near 100 % is reported as thousands of percent, with every code in the sample inflated by the same factor. A separate correction step handles this before the fines are derived, writing a corrected value (value_std_corr) and a marker (gs_corr) on each measurement:\n\nICES-DOME and MUDAB renormalise each over-scaled, still-monotone curve so its coarsest cutoff (the total, near the &lt;2 mm fraction) reads 100 % (gs_corr = 'renorm'). This recovers the affected samples for the fines below.\nVannmiljø has only a handful of isolated bad values (and its codes mean “&gt;n µm”, so the curve renormalisation does not apply): these were manually reviewed against the raw data, found incorrect, and flagged gs_corr = 'invalid' (their standardised value nulled) for removal in the clean stage.\n\n\n\n\n\n\nSource\nRenormed\nInvalid\n\n\n\n\nVannmiljø\n0\n22\n\n\nICES-DOME\n1,147\n0\n\n\nMUDAB\n1,068\n0\n\n\n\n\n\nMareano needs no correction (its named-bin grain-size is already clean), so it has no gs_corr column and its fines read the uncorrected value."
+  },
+  {
+    "objectID": "grain-size-fines.html#coverage",
+    "href": "grain-size-fines.html#coverage",
+    "title": "Fines (<63 µm)",
+    "section": "3. Coverage",
+    "text": "3. Coverage\n\n\n\n\n\nSource\nSubsamples\nWith fines\n% covered\n\n\n\n\nMareano\n3,280\n3,265\n100\n\n\nVannmiljø\n28,023\n7,113\n25\n\n\nICES-DOME\n14,756\n8,957\n61\n\n\nMUDAB\n6,209\n4,162\n67\n\n\n\n\n\nCoverage is partial by design: a subsample contributes only if it has a usable &lt;63 µm measurement. Implausible values (a cumulative mass fraction outside 0 to 100 %, about 1 % of the grain-size rows) are left out rather than corrected here.\nThe fines_basis breakdown shows which route each value came from:\n\n\n\n\n\nSource\nBasis\nSubsamples\n\n\n\n\nMareano\nsum_bins\n3,265\n\n\nVannmiljø\nfins\n3,628\n\n\nVannmiljø\ngsmf_63_complement\n3,094\n\n\nVannmiljø\nclay_silt_sum\n391\n\n\nICES-DOME\ngsmf63_sedtot\n6,611\n\n\nICES-DOME\ngsmf63_sed2000\n2,346\n\n\nMUDAB\ngsmf63_sedtot\n4,152\n\n\nMUDAB\ngsmf63_sed2000\n10"
+  },
+  {
+    "objectID": "grain-size-fines.html#distribution",
+    "href": "grain-size-fines.html#distribution",
+    "title": "Fines (<63 µm)",
+    "section": "4. Distribution",
+    "text": "4. Distribution\nSummary of the derived fines_lt63 (%) per source:\n\n\n\n\n\nSource\nN\nMin\nQ1\nMedian\nMean\nQ3\nMax\n\n\n\n\nMareano\n3,265\n0.0\n61.2\n78.6\n72.8\n89.1\n99.5\n\n\nVannmiljø\n7,113\n0.0\n13.8\n41.0\n44.6\n74.7\n100.0\n\n\nICES-DOME\n8,957\n0.0\n0.7\n29.9\n38.4\n74.0\n100.0\n\n\nMUDAB\n4,162\n0.1\n12.0\n64.0\n53.7\n88.6\n100.0\n\n\n\n\n\nSpread across mud-content bands (share of each source’s samples):\n\n\n\n\n\nSource\n0-10\n10-25\n25-50\n50-75\n75-90\n90-100\n\n\n\n\nMareano\n1\n3\n11\n28\n35\n22\n\n\nVannmiljø\n20\n17\n20\n19\n14\n11\n\n\nICES-DOME\n38\n9\n13\n15\n12\n12\n\n\nMUDAB\n23\n9\n10\n16\n19\n22\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nfines_lt63 is a reusable derived quantity, not a flag: nothing is deleted. For Vannmiljø, samples with neither direct code fall back to the clay + silt sum (GSMF2 + GSMF2_63), the same construction as Mareano. The equivalent bin route for ICES-DOME and MUDAB reaches only &lt;60 µm (a different cutoff) and was left out. The SED2000 gravel adjustment cannot be computed (no whole-sample grain-size exists for those samples), so it is handled by the documented assumption above. The Vannmiljø values the correction could not repair have now been reviewed and flagged invalid (removed in the clean stage), so no grain-size items remain open."
+  },
+  {
+    "objectID": "flagging-conversion-range.html",
+    "href": "flagging-conversion-range.html",
+    "title": "Unit Conversion & Range Check",
+    "section": "",
+    "text": "The five sources report the same measurements in different units: mg/kg, µg/kg, %, g/kg, and so on. Before implausible values can be flagged consistently, every value is first converted to a common unit, and the standardised chemistry values are then compared against a plausible range per element. Both are additive columns on measurement; nothing is deleted here."
+  },
+  {
+    "objectID": "flagging-conversion-range.html#unit-conversion",
+    "href": "flagging-conversion-range.html#unit-conversion",
+    "title": "Unit Conversion & Range Check",
+    "section": "1. Unit conversion",
+    "text": "1. Unit conversion\nEach measurement gets a standardised value value_std and its unit unit_std, assigned by measurand rather than by the raw unit:\n\nChemistry: the 7 target elements, the Fe/Al normalisers, and organic carbon (CORG / TOC / TOC63) → mg/kg dry weight.\nGrain-size composition → % (a mass/volume fraction). There is no length/µm grain-size in the data, so every grain-size value is a fraction and standardises to %.\n\nThe conversion goes through the mass fraction value / denom, where denom is “100 % of the sample mass” expressed in the original unit, then scales to the target unit’s full scale (1,000,000 for mg/kg, 100 for %).\nWhere a source supplies a QC-corrected value, that is the value standardised here: 4Demon’s corrected_value (which its metadata recommends for analysis) carries scale-error fixes and below-detection substitutions, while the raw value is kept as provenance. This corrected a batch of 4Demon iron values reported about 10 times too high.\n\n\n\n\n\n\n\n\n\n\nMeasurand\nStandard unit\nExample conversion\n\n\n\n\nTargets (Co, Cu, I, Mn, Mo, Se, Zn)\nmg/kg\n9.8 % Cu → 98,000 mg/kg\n\n\nNormalisers (Fe, Al)\nmg/kg\n3.31 % Al → 33,100 mg/kg\n\n\nOrganic carbon (CORG / TOC / TOC63)\nmg/kg\n85 g/kg C → 85,000 mg/kg\n\n\nGrain-size composition\n%\n180 g/kg → 18 %\n\n\n\n\n\nThe table below shows how each source’s measurements split between the two standardised units. Every unit present maps to a mass basis, so nothing is left unconverted.\n\n\n\n\n\n\n\n\n\n\n\n\nSource\nMeasurements\nChemistry (mg/kg)\nGrain-size (%)\nNot converted\n\n\n\n\nMareano\n41,789\n28,729\n13,060\n0\n\n\nVannmiljø\n107,867\n93,065\n14,802\n0\n\n\nICES-DOME\n158,858\n103,143\n55,715\n0\n\n\nMUDAB\n63,642\n42,377\n21,265\n0\n\n\n4Demon\n6,739\n6,739\n0\n0\n\n\nTotal\n378,895\n274,053\n104,842\n0"
+  },
+  {
+    "objectID": "flagging-conversion-range.html#plausible-range-check",
+    "href": "flagging-conversion-range.html#plausible-range-check",
+    "title": "Unit Conversion & Range Check",
+    "section": "2. Plausible range check",
+    "text": "2. Plausible range check\nThe standardised value_std (mg/kg) of every chemistry measurement is compared against a per-element plausible range. A value below the minimum is flagged below_min, above the maximum above_max; everything else, including grain-size (unbounded) and below-LOQ readings (a limit, not a value), stays unflagged.\n\n\n\n\n\n\nWarning\n\n\n\nThese bounds are a draft, deliberately generous: they target clearly implausible values (both impossibly high and impossibly low), not strict geochemical limits, and are still to be reviewed with domain experts.\n\n\n\n\n\n\n\nElement\nMin (mg/kg)\nMax (mg/kg)\n\n\n\n\nCobalt (Co)\n1e-01\n300\n\n\nCopper (Cu)\n5e-01\n10,000\n\n\nIodine (I)\n1e-01\n1,000\n\n\nManganese (Mn)\n1e+00\n50,000\n\n\nMolybdenum (Mo)\n5e-02\n500\n\n\nSelenium (Se)\n1e-02\n100\n\n\nZinc (Zn)\n1e+00\n20,000\n\n\nIron (Fe)\n5e+02\n250,000\n\n\nAluminium (Al)\n5e+02\n200,000\n\n\nOrganic C (CORG/TOC/TOC63)\n1e+02\n300,000\n\n\n\n\n\n\nFlagged values per source\n\n\n\n\n\nSource\nMeasurements\nBelow min\nAbove max\n\n\n\n\nMareano\n41,789\n0\n0\n\n\nVannmiljø\n107,867\n1,102\n411\n\n\nICES-DOME\n158,858\n97\n15\n\n\nMUDAB\n63,642\n8\n22\n\n\n4Demon\n6,739\n9\n0\n\n\nTotal\n378,895\n1,216\n448\n\n\n\n\n\n\n\nFlagged values per element (all sources)\n\n\n\n\n\nElement\nBelow min\nAbove max\n\n\n\n\nOrganic C (TOC)\n495\n129\n\n\nIron\n229\n27\n\n\nOrganic C (TOC63)\n23\n223\n\n\nAluminium\n201\n3\n\n\nCopper\n149\n15\n\n\nZinc\n41\n37\n\n\nManganese\n32\n13\n\n\nMolybdenum\n34\n0\n\n\nCobalt\n7\n1\n\n\nOrganic C\n5\n0\n\n\n\n\n\nFlagged rows are review candidates: they carry the range_flag marker but keep their values, and are removed only later, in the Data Cleaning step."
+  },
+  {
+    "objectID": "db-schema-slim.html",
+    "href": "db-schema-slim.html",
+    "title": "DB Schema (Slim)",
+    "section": "",
+    "text": "The slim schema is a common seven-table schema shared by all five sources. The core structure (table set, primary/foreign keys, and the columns needed for the trace-element analysis) is identical everywhere. Around that core, each source keeps a handful of source-specific columns that carry information only that source provides (extra identifiers, detection flags, reporting basis, and so on).\nThis page shows the entity-relationship diagram and, for every table, a per-source column comparison. A filled dot (●) means the column is present in that source’s slim database."
+  },
+  {
+    "objectID": "db-schema-slim.html#schema-diagram",
+    "href": "db-schema-slim.html#schema-diagram",
+    "title": "DB Schema (Slim)",
+    "section": "Schema diagram",
+    "text": "Schema diagram\nThe hierarchy flows from dataset and site through event and subsample down to measurement. The element table is a lookup for both method and measurement via the symbol key.\n\n\n\nSlim schema entity-relationship diagram\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe symbol column in measurement is an intentional denormalisation: it is derivable via method_id → method.symbol but retained as a key for query efficiency."
+  },
+  {
+    "objectID": "db-schema-slim.html#element",
+    "href": "db-schema-slim.html#element",
+    "title": "DB Schema (Slim)",
+    "section": "element",
+    "text": "element\nLookup table mapping chemical symbols to element names.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nKey\nMareano\nVannmiljø\nICES-DOME\nMUDAB\n4Demon\nDescription\n\n\n\n\nsymbol\nTEXT\nPK\n●\n●\n●\n●\n●\nChemical symbol (e.g., CO, CU); FK target for method and measurement.\n\n\nelement\nTEXT\n\n●\n●\n●\n●\n●\nFull element name (e.g., Cobalt, Copper).\n\n\ncas_no\nTEXT\n\n\n●\n\n●\n\nCAS registry number."
+  },
+  {
+    "objectID": "db-schema-slim.html#dataset",
+    "href": "db-schema-slim.html#dataset",
+    "title": "DB Schema (Slim)",
+    "section": "dataset",
+    "text": "dataset\nA data-collection campaign or source contribution.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nKey\nMareano\nVannmiljø\nICES-DOME\nMUDAB\n4Demon\nDescription\n\n\n\n\ndataset_id\nINTEGER\nPK\n●\n●\n●\n●\n●\nUnique dataset identifier.\n\n\nsource\nTEXT\n\n●\n●\n●\n●\n●\nSource database name (e.g., Mareano).\n\n\ndataset_name\nTEXT\n\n●\n●\n●\n●\n●\nName of the data-collection campaign / dataset.\n\n\ncountry\nTEXT\n\n●\n●\n●\n\n●\nCountry of origin.\n\n\ninstitute\nTEXT\n\n●\n\n●\n●\n\nInstitute responsible for the data.\n\n\ndataset_code\nTEXT\n\n\n●\n●\n\n\nSource-native dataset code.\n\n\ndataset_group\nTEXT\n\n\n\n\n●\n\nDataset grouping (MUDAB).\n\n\nregion\nTEXT\n\n\n\n\n●\n\nMarine region.\n\n\ninstitute_code\nTEXT\n\n\n\n\n●\n\nInstitute code."
+  },
+  {
+    "objectID": "db-schema-slim.html#site",
+    "href": "db-schema-slim.html#site",
+    "title": "DB Schema (Slim)",
+    "section": "site",
+    "text": "site\nUnique geographic locations, keyed on latitude/longitude rounded to three decimal places.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nKey\nMareano\nVannmiljø\nICES-DOME\nMUDAB\n4Demon\nDescription\n\n\n\n\nsite_id\nINTEGER\nPK\n●\n●\n●\n●\n●\nUnique site identifier.\n\n\nlatitude\nREAL\n\n●\n●\n●\n●\n●\nLatitude in decimal degrees (rounded to 3 d.p.).\n\n\nlongitude\nREAL\n\n●\n●\n●\n●\n●\nLongitude in decimal degrees (rounded to 3 d.p.).\n\n\ncountry\nTEXT\n\n●\n●\n●\n●\n●\nNearest country.\n\n\ncountry_code\nTEXT\n\n●\n●\n●\n●\n●\nISO country code.\n\n\ndist_to_coast\nINTEGER\n\n●\n●\n●\n●\n●\nDistance to nearest coastline (km).\n\n\nmunicipality\nTEXT\n\n●\n●\n●\n●\n●\nNearest municipality.\n\n\nsea_name\nTEXT\n\n●\n●\n●\n●\n●\nName of the sea or ocean body.\n\n\ndepth\nREAL\n\n●\n\n\n\n\nWater depth (m, positive downward)."
+  },
+  {
+    "objectID": "db-schema-slim.html#event",
+    "href": "db-schema-slim.html#event",
+    "title": "DB Schema (Slim)",
+    "section": "event",
+    "text": "event\nA single sampling event: one deployment of a sampling tool at a site.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nKey\nMareano\nVannmiljø\nICES-DOME\nMUDAB\n4Demon\nDescription\n\n\n\n\nevent_id\nINTEGER\nPK\n●\n●\n●\n●\n●\nUnique event identifier.\n\n\ndataset_id\nINTEGER\nFK\n●\n●\n●\n●\n●\n→ dataset.\n\n\nsite_id\nINTEGER\nFK\n●\n●\n●\n●\n●\n→ site.\n\n\nsampling_tool\nTEXT\n\n●\n●\n●\n●\n●\nSampling gear code (e.g., BC, MC, GR).\n\n\nyear\nINTEGER\n\n●\n●\n●\n●\n●\nYear of the sampling event.\n\n\ndate\nTEXT\n\n●\n\n●\n●\n●\nDate of the sampling event.\n\n\ndatetime\nTEXT\n\n\n●\n\n\n\nCombined date-time (Vannmiljø).\n\n\ntool_description\nTEXT\n\n\n\n●\n\n\nHuman-readable gear description.\n\n\ntime\nTEXT\n\n\n\n\n●\n\nTime of the sampling event."
+  },
+  {
+    "objectID": "db-schema-slim.html#method",
+    "href": "db-schema-slim.html#method",
+    "title": "DB Schema (Slim)",
+    "section": "method",
+    "text": "method\nUnique combinations of analytical method, laboratory, and detection/quantification limits per chemical symbol.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nKey\nMareano\nVannmiljø\nICES-DOME\nMUDAB\n4Demon\nDescription\n\n\n\n\nmethod_id\nINTEGER\nPK\n●\n●\n●\n●\n●\nUnique method identifier.\n\n\nsymbol\nTEXT\nFK\n●\n●\n●\n●\n●\n→ element.\n\n\nmethod\nTEXT\n\n●\n●\n●\n●\n●\nAnalytical method (e.g., ICP-MS, ICP-AES).\n\n\nlab\nTEXT\n\n●\n\n●\n●\n\nLaboratory that performed the analysis.\n\n\nlab_name\nTEXT\n\n\n\n●\n●\n\nFull laboratory name.\n\n\nlld\nREAL\n\n●\n\n\n\n\nLower level of detection (Mareano).\n\n\nlod\nREAL\n\n\n●\n●\n●\n\nLimit of detection.\n\n\nloq\nREAL\n\n\n●\n●\n●\n\nLimit of quantification.\n\n\nuncertainty\nREAL\n\n\n\n\n●\n\nReported measurement uncertainty.\n\n\nmethod_description\nTEXT\n\n\n\n●\n●\n\nFree-text method description.\n\n\ncomment\nTEXT\n\n●\n\n\n\n\nComment on the method / LLD."
+  },
+  {
+    "objectID": "db-schema-slim.html#subsample",
+    "href": "db-schema-slim.html#subsample",
+    "title": "DB Schema (Slim)",
+    "section": "subsample",
+    "text": "subsample\nA discrete depth interval within a sampling event. This table is identical across all five sources.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nKey\nMareano\nVannmiljø\nICES-DOME\nMUDAB\n4Demon\nDescription\n\n\n\n\nsubsample_id\nINTEGER\nPK\n●\n●\n●\n●\n●\nUnique subsample identifier.\n\n\nevent_id\nINTEGER\nFK\n●\n●\n●\n●\n●\n→ event.\n\n\ndepth_from\nINTEGER\n\n●\n●\n●\n●\n●\nTop depth of the interval (cm).\n\n\ndepth_to\nINTEGER\n\n●\n●\n●\n●\n●\nBottom depth of the interval (cm)."
+  },
+  {
+    "objectID": "db-schema-slim.html#measurement",
+    "href": "db-schema-slim.html#measurement",
+    "title": "DB Schema (Slim)",
+    "section": "measurement",
+    "text": "measurement\nChemical concentration values per subsample and symbol. This table carries the most source-specific variation, because each source reports its own quality flags, reporting basis, and derived values.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nKey\nMareano\nVannmiljø\nICES-DOME\nMUDAB\n4Demon\nDescription\n\n\n\n\nmeasurement_id\nINTEGER\nPK\n●\n●\n●\n●\n●\nUnique measurement identifier.\n\n\nsubsample_id\nINTEGER\nFK\n●\n●\n●\n●\n●\n→ subsample.\n\n\nsymbol\nTEXT\nFK\n●\n●\n●\n●\n●\n→ element (denormalised from method).\n\n\nvalue\nREAL\n\n●\n●\n●\n●\n●\nMeasured concentration value.\n\n\nunit\nTEXT\n\n●\n●\n●\n●\n●\nUnit of measurement (e.g., mg/kg).\n\n\nmethod_id\nINTEGER\nFK\n●\n●\n●\n●\n●\n→ method.\n\n\nbelow_lld\nINTEGER\n\n●\n\n\n\n\n1 if below the lower level of detection (Mareano).\n\n\noperator\nTEXT\n\n\n●\n\n\n\nRelational operator (&lt;, &gt;, =, ND).\n\n\nfiltered\nINTEGER\n\n\n●\n\n\n\n1 if the sample was filtered.\n\n\nbasis\nTEXT\n\n\n\n●\n●\n●\nReporting basis (e.g., dry / wet weight).\n\n\nmatrix\nTEXT\n\n\n\n●\n●\n●\nSample matrix / sediment fraction.\n\n\nqflag\nTEXT\n\n\n\n●\n●\n\nICES quality flag (&lt;, Q, D, …).\n\n\nvflag\nTEXT/INT\n\n\n\n●\n\n●\nValue / validation flag.\n\n\nuncrt\nREAL\n\n\n\n●\n\n\nMeasurement uncertainty.\n\n\nmetcu\nTEXT\n\n\n\n●\n\n\nUncertainty method code.\n\n\ndcflag\nTEXT\n\n\n\n●\n\n\nDetection / confirmation flag.\n\n\ncorrected_value\nREAL\n\n\n\n\n\n●\nCorrected value (4Demon).\n\n\nfraction_range\nTEXT\n\n\n\n\n\n●\nGrain-size fraction range.\n\n\nlimit_flag\nINTEGER\n\n\n\n\n\n●\n1 if below the limit (4Demon).\n\n\nrange_check_flag\nINTEGER\n\n\n\n\n\n●\nRange-validation flag.\n\n\noutlier_extreme_flag\nINTEGER\n\n\n\n\n\n●\nExtreme-value outlier flag.\n\n\noutlier_stdev_flag\nINTEGER\n\n\n\n\n\n●\nStandard-deviation outlier flag."
+  },
+  {
+    "objectID": "db-schema-slim.html#quality-control-marking-columns",
+    "href": "db-schema-slim.html#quality-control-marking-columns",
+    "title": "DB Schema (Slim)",
+    "section": "Quality-control & marking columns",
+    "text": "Quality-control & marking columns\nOn top of the structural schema above, the slim quality-control steps append a common set of classification and flag columns. These are identical across all five sources and never overwrite the original values; they only classify or mark records for review or later removal. Their detailed semantics are covered on the Flagging pages.\n\n\n\n\n\n\n\n\n\n\n\nTable\nColumn\nType\nMeaning\n\n\n\n\nelement\ncategory\nTEXT\nMeasurand class: target / reference / organic / composition.\n\n\nsite\narea_flag\nTEXT\nLocation flag: outside_europe, else NULL.\n\n\nevent\nn_layers\nINTEGER\nNumber of subsamples (depth layers) under the event.\n\n\nevent\nmulti_flag\nINTEGER\n1 = multi-layer / -core sampling, 0 = single grab.\n\n\nsubsample\nfe_exist\nINTEGER\n1 = an Fe (iron) normaliser measurement is present.\n\n\nsubsample\nal_exist\nINTEGER\n1 = an Al (aluminium) normaliser measurement is present.\n\n\nsubsample\norg_exist\nINTEGER\n1 = an organic-carbon measurement (CORG / TOC) is present.\n\n\nsubsample\ncomp_exist\nINTEGER\n1 = a grain-size composition measurement is present.\n\n\nmeasurement\ninvalid_flag\nTEXT\nValue flag: negative / over_range, else NULL.\n\n\nmeasurement\ndup_flag\nTEXT\nduplicate / technical_replicate, else NULL.\n\n\nmeasurement\nbelow_loq\nINTEGER\n1 = value is below the detection / quantification limit.\n\n\nmeasurement\nvalue_std\nREAL\nStandardised value (chemistry mg/kg, composition %), else NULL.\n\n\nmeasurement\nunit_std\nTEXT\nUnit of value_std: mg/kg or %, else NULL.\n\n\nmeasurement\nrange_flag\nTEXT\nPlausible-range flag: below_min / above_max, else NULL.\n\n\nmeasurement\nbelow_loq_num\nINTEGER\n1 = value below the method’s numeric limit (chemistry only), else 0 / NULL.\n\n\nmeasurement\nweight_basis\nTEXT\nSample weight basis of a chemistry value: dry / wet, else NULL.\n\n\n\n\n\nBeyond these common columns, some sources carry source-specific columns from the later steps: measurement.src_flag (native quality flags, on Vannmiljø / ICES-DOME / 4Demon); measurement.value_std_corr / gs_corr (corrected grain-size value and its marker, on ICES-DOME / MUDAB / Vannmiljø); and subsample.fines_lt63 / fines_basis (the derived &lt;63µm grain-size fraction, on every source with grain-size, i.e. all but 4Demon). These are documented on the Source Specific and Grain size pages."
+  },
+  {
+    "objectID": "database-downloads.html",
+    "href": "database-downloads.html",
+    "title": "Database Downloads",
+    "section": "",
+    "text": "Each source’s slim database is published as an asset on the GitHub release of its pilot repository. All five share the common DB Schema (Slim): the same seven tables, differing only in a few source-specific columns."
+  },
+  {
+    "objectID": "database-downloads.html#available-databases",
+    "href": "database-downloads.html#available-databases",
+    "title": "Database Downloads",
+    "section": "Available databases",
+    "text": "Available databases\n\nSlim databases\n\n\n\n\n\n\n\nSource\nFile\nDownload\n\n\n\n\nMareano\nmareano_slim.sqlite\nDownload\n\n\nVannmiljø\nvannmiljo_slim.sqlite\nDownload\n\n\nICES-DOME\nices_dome_slim.sqlite\nDownload\n\n\nMUDAB\nmudab_slim.sqlite\nDownload\n\n\n4Demon\n4demon_slim.sqlite\nDownload\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nEach file is a self-contained SQLite database. See the DB Schema (Slim) page for the table definitions and the per-source column comparison."
+  },
+  {
+    "objectID": "clean-harmonisation.html",
+    "href": "clean-harmonisation.html",
+    "title": "Harmonisation",
+    "section": "",
+    "text": "Step 1 puts every source into one format, using the ICES-DOME vocabulary. Values are not changed: the original value and unit are kept, alongside a standardised value in a common unit."
+  },
+  {
+    "objectID": "clean-harmonisation.html#symbols",
+    "href": "clean-harmonisation.html#symbols",
+    "title": "Harmonisation",
+    "section": "1. Symbols",
+    "text": "1. Symbols\nChemistry symbols are unified to the ICES names: the seven targets, the Fe/Al normalisers, and organic carbon CORG (Mareano/Vannmiljø TOC maps to CORG; Vannmiljø’s TOC63, carbon on the &lt;63 µm fraction, is kept separate). Case is folded (Fe becomes FE). The chemistry symbols now present per source:\n\n\n\n\n\nSource\nSymbols\n\n\n\n\nMareano\nAL, CO, CORG, CU, FE, MN, MO, SE, ZN\n\n\nVannmiljø\nAL, CO, CORG, CU, FE, MN, MO, SE, TOC63, ZN\n\n\nICES-DOME\nAL, CO, CORG, CU, FE, I, MN, MO, SE, ZN\n\n\nMUDAB\nAL, CO, CORG, CU, FE, MN, MO, SE, ZN\n\n\n4Demon\nAL, CU, FE, ZN"
+  },
+  {
+    "objectID": "clean-harmonisation.html#units",
+    "href": "clean-harmonisation.html#units",
+    "title": "Harmonisation",
+    "section": "2. Units",
+    "text": "2. Units\nThe original unit is retained (renamed to the ICES form: micro sign to u, and Vannmiljø’s dw / C suffixes stripped), and every measurement also carries a standardised value_std in mg/kg (unit_std), converted via its mass basis. Original chemistry units still present:\n\n\n\n\n\nSource\nOriginal units\n\n\n\n\nMareano\nmg/kg, wt.%\n\n\nVannmiljø\ng/kg, mg/kg, ug/kg\n\n\nICES-DOME\n%, g/kg, mg/kg, ug/g, ug/kg\n\n\nMUDAB\n%, g/kg, mg/kg\n\n\n4Demon\nug/g"
+  },
+  {
+    "objectID": "clean-harmonisation.html#depth",
+    "href": "clean-harmonisation.html#depth",
+    "title": "Harmonisation",
+    "section": "3. Depth",
+    "text": "3. Depth\nSediment depth intervals are all converted to centimetres. The sources stored depth differently: ICES-DOME in metres (multiplied by 100), the others already in cm. Vannmiljø’s corrupt depths (beyond a plausible core length, or inverted) were set to unknown.\n\n\n\n\n\nSource\nMin depth (cm)\nMax depth (cm)\nDepth unknown\n\n\n\n\nMareano\n0\n49\n0\n\n\nVannmiljø\n0\n300\n221\n\n\nICES-DOME\n0\n200\n0\n\n\nMUDAB\n0\n200\n0\n\n\n4Demon\n0\n20\n0"
+  },
+  {
+    "objectID": "clean-harmonisation.html#gear-and-detection-limits",
+    "href": "clean-harmonisation.html#gear-and-detection-limits",
+    "title": "Harmonisation",
+    "section": "4. Gear and detection limits",
+    "text": "4. Gear and detection limits\nsampling_tool and method are carried in the ICES form where the source already uses ICES-style codes (Mareano, ICES-DOME, MUDAB, 4Demon). Vannmiljø records ISO sampling standards that do not map to ICES gear, so they are left as-is. Detection and quantification limits (lod / loq) are kept on the method table with their reporting unit (limit_unit); Mareano’s single lld becomes lod, and 4Demon carries no numeric limits.\n\n\n\n\n\nSource\nMethods\nWith LOD\nWith LOQ\n\n\n\n\nMareano\n23\n23\n0\n\n\nVannmiljø\n446\n135\n339\n\n\nICES-DOME\n1,314\n849\n272\n\n\nMUDAB\n423\n225\n143\n\n\n4Demon\n38\n0\n0"
+  },
+  {
+    "objectID": "clean-cleaning.html",
+    "href": "clean-cleaning.html",
+    "title": "Cleaning",
+    "section": "",
+    "text": "Step 2 removes chemistry measurements that failed quality control, then collapses repeated measurements: identical values (duplicates) are kept once, and differing values of the same measurand on the same occasion (technical replicates) are averaged, keeping the mean, its standard deviation, and the replicate count."
+  },
+  {
+    "objectID": "clean-cleaning.html#rows-removed-by-flag",
+    "href": "clean-cleaning.html#rows-removed-by-flag",
+    "title": "Cleaning",
+    "section": "1. Rows removed by flag",
+    "text": "1. Rows removed by flag\nChemistry measurements carrying each flag (from the slim stage), scoped to chemistry. A measurement can carry more than one flag, so the removed total is the union, not the sum. Everything flagged here is dropped from the clean database.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSource\nChemistry (slim)\nOut of range\nInvalid\nBelow limit\nWet weight\nSource QC\n\n\n\n\nMareano\n28,729\n0\n0\n4,610\n0\n0\n\n\nVannmiljø\n93,065\n1,513\n279\n1,217\n0\n6\n\n\nICES-DOME\n103,143\n112\n5\n2,099\n363\n84\n\n\nMUDAB\n42,377\n30\n0\n1,007\n0\n0\n\n\n4Demon\n6,739\n9\n0\n53\n0\n1,621"
+  },
+  {
+    "objectID": "clean-cleaning.html#duplicates-and-technical-replicates",
+    "href": "clean-cleaning.html#duplicates-and-technical-replicates",
+    "title": "Cleaning",
+    "section": "2. Duplicates and technical replicates",
+    "text": "2. Duplicates and technical replicates\nAfter removal, the surviving chemistry is collapsed per sampling occasion + element + method. Most measurements are singletons (n_rep = 1); groups with more than one distinct value are averaged (n_rep &gt; 1), carrying a standard deviation.\n\n\n\n\n\nSource\nClean rows\nSingle\nAveraged (replicates)\nMax replicates\n\n\n\n\nMareano\n24,098\n24,096\n2\n2\n\n\nVannmiljø\n82,014\n77,432\n4,582\n10\n\n\nICES-DOME\n69,719\n54,429\n15,290\n22\n\n\nMUDAB\n30,744\n22,134\n8,610\n9\n\n\n4Demon\n4,459\n4,084\n375\n3"
+  },
+  {
+    "objectID": "clean-cleaning.html#measurement-uncertainty",
+    "href": "clean-cleaning.html#measurement-uncertainty",
+    "title": "Cleaning",
+    "section": "3. Measurement uncertainty",
+    "text": "3. Measurement uncertainty\nWhere a source reports analytical uncertainty, it is standardised to mg/kg (value_uncrt) alongside the value. Only ICES-DOME carries per-measurement uncertainty (uncrt / metcu), so it is the only source with a populated value_uncrt.\n\n\n\n\n\nSource\nClean rows\nWith uncertainty\n\n\n\n\nMareano\n24,098\n0\n\n\nVannmiljø\n82,014\n0\n\n\nICES-DOME\n69,719\n38,544\n\n\nMUDAB\n30,744\n0\n\n\n4Demon\n4,459\n0"
+  },
+  {
+    "objectID": "class-summary.html",
+    "href": "class-summary.html",
+    "title": "Class Summary",
+    "section": "",
+    "text": "Before any quality flag is applied, each element is assigned a measurand class: a single category column on the element table that every later step reads instead of maintaining its own list of symbols. Four classes cover the data:\nThis page summarises how the measurements split across those classes in each source, and which supporting data (normalisers, organic carbon, grain-size composition) is available per sample."
+  },
+  {
+    "objectID": "class-summary.html#measurements-by-class",
+    "href": "class-summary.html#measurements-by-class",
+    "title": "Class Summary",
+    "section": "1. Measurements by class",
+    "text": "1. Measurements by class\nEvery measurement inherits its class from its element. The table shows how many measurements fall in each class per source.\n\n\n\n\n\nSource\nTarget\nReference\nOrganic\nComposition\n\n\n\n\nMareano\n18,941\n6,508\n3,280\n13,060\n\n\nVannmiljø\n62,017\n1,869\n29,179\n14,802\n\n\nICES-DOME\n58,014\n30,419\n14,710\n55,715\n\n\nMUDAB\n26,044\n11,439\n4,894\n21,265\n\n\n4Demon\n3,528\n3,211\n0\n0\n\n\nTotal\n168,544\n53,446\n52,063\n104,842\n\n\n\n\n\nThe number of distinct elements backing those measurements differs too: one target set is largely shared, while composition spans many grain-size codes that vary by source.\n\n\n\n\n\nSource\nTarget\nReference\nOrganic\nComposition\n\n\n\n\nMareano\n6\n2\n1\n4\n\n\nVannmiljø\n6\n2\n2\n10\n\n\nICES-DOME\n7\n2\n1\n45\n\n\nMUDAB\n6\n2\n1\n14\n\n\n4Demon\n2\n2\n0\n0"
+  },
+  {
+    "objectID": "class-summary.html#supporting-data-availability",
+    "href": "class-summary.html#supporting-data-availability",
+    "title": "Class Summary",
+    "section": "2. Supporting-data availability",
+    "text": "2. Supporting-data availability\nWhich data needed for later normalisation and characterisation is present in each depth interval (subsample): an Fe or Al normaliser, organic carbon, or grain-size composition. The counts are subsamples for which each is available. These existence flags read the element class above (organic and composition) and the Fe / Al symbols directly. (4Demon carries no organic-carbon or composition parameters, so those are 0.)\n\n\n\n\n\nSource\nSubsamples\nFe\nAl\nOrganic C\nComposition\n\n\n\n\nMareano\n3,280\n3,254\n3,254\n3,280\n3,265\n\n\nVannmiljø\n28,023\n1,006\n489\n20,868\n7,240\n\n\nICES-DOME\n14,756\n8,157\n12,153\n10,363\n10,678\n\n\nMUDAB\n6,209\n3,585\n4,414\n4,513\n5,287\n\n\n4Demon\n1,480\n1,296\n1,287\n0\n0\n\n\nTotal\n53,748\n17,298\n21,597\n39,024\n26,470\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe category column is descriptive, not a quality flag: no rows are marked or removed here. It is the shared classification the flagging steps build on."
+  },
+  {
+    "objectID": "clean-cleaning-summary.html",
+    "href": "clean-cleaning-summary.html",
+    "title": "Cleaning summary",
+    "section": "",
+    "text": "The cleaning step removes failed-QC rows (out of range, invalid, below limit, wet weight, source-specific QC) and collapses duplicates and technical replicates into one value each. This page counts the chemistry (target + reference + organic) measurements before and after, overall and per element."
+  },
+  {
+    "objectID": "clean-cleaning-summary.html#overall",
+    "href": "clean-cleaning-summary.html#overall",
+    "title": "Cleaning summary",
+    "section": "1. Overall",
+    "text": "1. Overall\nTotal chemistry measurements per source. The drop is the combined effect of the removals and of collapsing duplicates and technical replicates.\n\n\n\n\n\nSource\nChemistry (slim)\nChemistry (clean)\n% retained\n\n\n\n\nMareano\n28,729\n24,098\n84\n\n\nVannmiljø\n93,065\n82,014\n88\n\n\nICES-DOME\n103,143\n69,719\n68\n\n\nMUDAB\n42,377\n30,744\n73\n\n\n4Demon\n6,739\n4,459\n66"
+  },
+  {
+    "objectID": "clean-cleaning-summary.html#per-element",
+    "href": "clean-cleaning-summary.html#per-element",
+    "title": "Cleaning summary",
+    "section": "2. Per element",
+    "text": "2. Per element\nThe same counts broken down by element. The clean stage renames organic carbon TOC to the ICES CORG, so the slim TOC rows are matched to clean CORG here (the finer TOC63 fraction keeps its own symbol).\n\nMareanoVannmiljøICES-DOMEMUDAB4Demon\n\n\n\n\n\nElement\nCategory\nBefore (slim)\nAfter (clean)\n% retained\n\n\n\n\nCORG\norganic\n3,280\n3,271\n100\n\n\nAL\nreference\n3,254\n3,251\n100\n\n\nFE\nreference\n3,254\n3,251\n100\n\n\nCO\ntarget\n3,254\n3,251\n100\n\n\nCU\ntarget\n3,280\n3,274\n100\n\n\nMN\ntarget\n3,254\n3,251\n100\n\n\nMO\ntarget\n3,138\n443\n14\n\n\nSE\ntarget\n2,735\n829\n30\n\n\nZN\ntarget\n3,280\n3,277\n100\n\n\n\n\n\n\n\n\nElement\nCategory\nBefore (slim)\nAfter (clean)\n% retained\n\n\n\n\nCORG\norganic\n16,463\n14,272\n87\n\n\nTOC63\norganic\n12,716\n12,326\n97\n\n\nAL\nreference\n725\n410\n57\n\n\nFE\nreference\n1,144\n796\n70\n\n\nCO\ntarget\n813\n672\n83\n\n\nCU\ntarget\n30,303\n26,840\n89\n\n\nMN\ntarget\n1,662\n665\n40\n\n\nMO\ntarget\n722\n419\n58\n\n\nSE\ntarget\n203\n64\n32\n\n\nZN\ntarget\n28,314\n25,550\n90\n\n\n\n\n\n\n\n\nElement\nCategory\nBefore (slim)\nAfter (clean)\n% retained\n\n\n\n\nCORG\norganic\n14,710\n10,231\n70\n\n\nAL\nreference\n17,706\n12,192\n69\n\n\nFE\nreference\n12,713\n8,804\n69\n\n\nCO\ntarget\n2,996\n2,409\n80\n\n\nCU\ntarget\n20,681\n13,600\n66\n\n\nI\ntarget\n46\n15\n33\n\n\nMN\ntarget\n10,866\n7,324\n67\n\n\nMO\ntarget\n2,750\n1,157\n42\n\n\nSE\ntarget\n94\n57\n61\n\n\nZN\ntarget\n20,581\n13,930\n68\n\n\n\n\n\n\n\n\nElement\nCategory\nBefore (slim)\nAfter (clean)\n% retained\n\n\n\n\nCORG\norganic\n4,894\n4,527\n93\n\n\nAL\nreference\n6,296\n4,401\n70\n\n\nFE\nreference\n5,143\n3,927\n76\n\n\nCO\ntarget\n1,872\n1,463\n78\n\n\nCU\ntarget\n8,876\n6,108\n69\n\n\nMN\ntarget\n3,980\n3,182\n80\n\n\nMO\ntarget\n2,453\n1,071\n44\n\n\nSE\ntarget\n36\n6\n17\n\n\nZN\ntarget\n8,827\n6,059\n69\n\n\n\n\n\n\n\n\nElement\nCategory\nBefore (slim)\nAfter (clean)\n% retained\n\n\n\n\nAL\nreference\n1,595\n1,011\n63\n\n\nFE\nreference\n1,616\n1,057\n65\n\n\nCU\ntarget\n1,742\n1,197\n69\n\n\nZN\ntarget\n1,786\n1,194\n67\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe clean databases are gitignored working files; this page reads them live at render time, so the counts reflect the current build."
+  },
+  {
+    "objectID": "clean-grain-size.html",
+    "href": "clean-grain-size.html",
+    "title": "Grain size",
+    "section": "",
+    "text": "Step 3 moves grain-size out of the measurement table into two tables: a per-subsample grain_size summary (sieved or bulk, the &lt;63 µm fines, and a fine/not flag) and a grain_size_fraction detail table (the size distribution). 4Demon has no grain-size and so does not appear here."
+  },
+  {
+    "objectID": "clean-grain-size.html#sieved-or-bulk",
+    "href": "clean-grain-size.html#sieved-or-bulk",
+    "title": "Grain size",
+    "section": "1. Sieved or bulk",
+    "text": "1. Sieved or bulk\nWhether each grain-size sample is a whole (bulk) sediment or a sieved fraction. For ICES-DOME and MUDAB this comes from the sample matrix; Mareano samples are all bulk (confirmed); Vannmiljø has no sieving metadata and is taken as bulk. Subsamples where this could not be determined were dropped.\n\n\n\n\n\nSource\nbulk\nsieved\n\n\n\n\nMareano\n3,265\n0\n\n\nVannmiljø\n7,240\n0\n\n\nICES-DOME\n10,644\n34\n\n\nMUDAB\n5,245\n41"
+  },
+  {
+    "objectID": "clean-grain-size.html#the-63-µm-fines",
+    "href": "clean-grain-size.html#the-63-µm-fines",
+    "title": "Grain size",
+    "section": "2. The <63 µm fines",
+    "text": "2. The &lt;63 µm fines\nfines_lt63 is the percentage of material finer than 63 µm (the clay + silt “mud”). is_fine marks samples that are mud-dominated (at least 50 %). Samples with a class but no usable fines value are NA.\n\n\n\n\n\n\n\n\n\n\n\n\n\nSource\nGrain-size samples\nFine (&gt;=50%)\nNot fine\nFines unknown\nMean fines (%)\n\n\n\n\nMareano\n3,265\n2,782\n483\n0\n72.8\n\n\nVannmiljø\n7,240\n3,091\n4,022\n127\n44.6\n\n\nICES-DOME\n10,678\n3,536\n5,421\n1,721\n38.4\n\n\nMUDAB\n5,286\n2,413\n1,749\n1,124\n53.7"
+  },
+  {
+    "objectID": "clean-grain-size.html#fraction-distribution",
+    "href": "clean-grain-size.html#fraction-distribution",
+    "title": "Grain size",
+    "section": "3. Fraction distribution",
+    "text": "3. Fraction distribution\nThe grain_size_fraction table holds the individual size fractions (corrected percentages, with parsed lo_um/hi_um bounds) moved out of measurement.\n\n\n\n\n\nSource\nFraction rows\nSubsamples\nDistinct codes\n\n\n\n\nMareano\n13,060\n3,265\n4\n\n\nVannmiljø\n14,780\n7,237\n10\n\n\nICES-DOME\n55,715\n10,678\n45\n\n\nMUDAB\n21,261\n5,286\n14\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nfines_lt63 and the fractions are derived, not deleted-from, quantities; the grain-size correction (renormalising scaled curves, flagging unreliable values) was applied in the slim stage, documented under Grain size."
+  },
+  {
+    "objectID": "clean-overview.html",
+    "href": "clean-overview.html",
+    "title": "Clean databases: overview",
+    "section": "",
+    "text": "The clean databases are the end product of the slim phase: the QC-passed, uniformly formatted databases built by applying the flags documented elsewhere on this site. This section documents how they are made. The later, separate analyses performed on the clean databases are presented on their own site.\nEach source becomes one \\&lt;source\\&gt;_clean.sqlite, still per-source (a cross-source merge is a later step). The clean stage runs three steps:\nStep\nDoes\n\n\n\n\n1. Harmonise\nUniform symbols, units, depths (cm), tools, LOD/LOQ (ICES-DOME names).\n\n\n2. Clean\nRemove failed-QC rows; keep one of each duplicate; average technical replicates.\n\n\n3. Annotate\nKeep the labels; split grain-size into its own tables."
+  },
+  {
+    "objectID": "clean-overview.html#data-sources",
+    "href": "clean-overview.html#data-sources",
+    "title": "Clean databases: overview",
+    "section": "Data sources",
+    "text": "Data sources\n\n\n\n\n\nSource\nOrigin\nIn clean stage\n\n\n\n\nMareano\nNorway / IMR\nsteps 1-3\n\n\nVannmiljø\nNorway\nsteps 1-3\n\n\nICES-DOME\nInternational\nsteps 1-3 (naming reference)\n\n\nMUDAB\nGermany\nsteps 1-3\n\n\n4Demon\nBelgium\nsteps 1-2 (no grain-size)"
+  },
+  {
+    "objectID": "clean-overview.html#what-the-cleaning-removed",
+    "href": "clean-overview.html#what-the-cleaning-removed",
+    "title": "Clean databases: overview",
+    "section": "What the cleaning removed",
+    "text": "What the cleaning removed\nChemistry measurements before (slim) and after (clean) the cleaning step, both overall and per element, are summarised on the Cleaning Summary page. The drop is the combined effect of removing failed-QC rows (out of range, invalid, below limit, wet weight, source-specific QC) and collapsing duplicates and technical replicates into one value each."
+  },
+  {
+    "objectID": "clean-overview.html#clean-database-tables",
+    "href": "clean-overview.html#clean-database-tables",
+    "title": "Clean databases: overview",
+    "section": "Clean database tables",
+    "text": "Clean database tables\nEvery clean database has the seven shared tables, and the grain-size sources add two more:\n\n\n\n\n\n\n\n\n\nTable\nContents\n\n\n\n\nelement\nSymbol, name, measurand category (ICES names).\n\n\ndataset / site\nProvenance and location.\n\n\nevent\nSampling occasion: date, year, gear.\n\n\nsubsample\nDepth interval (cm) + supporting-data flags.\n\n\nmeasurement\nChemistry only: value + standardised value_std (mg/kg), value_sd / n_rep, value_uncrt.\n\n\nmethod\nAnalysis + LOD/LOQ with their unit.\n\n\ngrain_size\nPer subsample: sieved/bulk, fines &lt;63 um, is_fine.\n\n\ngrain_size_fraction\nThe grain-size distribution moved out of measurement.\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe clean databases are gitignored working files; the pages here read them live at render time, so all counts reflect the current build."
+  },
+  {
+    "objectID": "db-schema-clean.html",
+    "href": "db-schema-clean.html",
+    "title": "Clean schema",
+    "section": "",
+    "text": "Each \\&lt;source\\&gt;_clean.sqlite has the seven shared tables carried from the slim schema, plus two grain-size tables (absent for 4Demon, which has no grain-size). The differences from the slim schema are that measurement is chemistry-only with aggregated values, grain-size lives in its own tables, and depths are in cm."
+  },
+  {
+    "objectID": "db-schema-clean.html#measurement-chemistry-only",
+    "href": "db-schema-clean.html#measurement-chemistry-only",
+    "title": "Clean schema",
+    "section": "measurement (chemistry only)",
+    "text": "measurement (chemistry only)\nOne row per cleaned chemistry measurement (target / reference / organic). Failed-QC rows are gone; duplicates and technical replicates are collapsed.\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nMeaning\n\n\n\n\nmeasurement_id\nINTEGER\nPrimary key (carried from slim).\n\n\nsubsample_id\nINTEGER\n-&gt; subsample.\n\n\nsymbol\nTEXT\nElement, ICES name (-&gt; element).\n\n\nvalue\nREAL\nValue in the original (ICES-named) unit.\n\n\nunit\nTEXT\nOriginal reporting unit.\n\n\nvalue_std\nREAL\nStandardised value, mg/kg (mean where replicates were averaged).\n\n\nunit_std\nTEXT\nAlways mg/kg.\n\n\nvalue_sd\nREAL\nSD across technical replicates, else NULL.\n\n\nn_rep\nINTEGER\nNumber of distinct replicate values averaged (1 = single).\n\n\nvalue_uncrt\nREAL\nAnalytical uncertainty, mg/kg (ICES-DOME only), else NULL.\n\n\nmatrix\nTEXT\nSample fraction the chemistry was measured on, where recorded.\n\n\nmethod_id\nINTEGER\n-&gt; method."
+  },
+  {
+    "objectID": "db-schema-clean.html#grain_size-per-subsample",
+    "href": "db-schema-clean.html#grain_size-per-subsample",
+    "title": "Clean schema",
+    "section": "grain_size (per subsample)",
+    "text": "grain_size (per subsample)\nOne row per subsample with usable grain-size.\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nMeaning\n\n\n\n\nsubsample_id\nINTEGER\nPrimary key (-&gt; subsample).\n\n\nfrac_class\nTEXT\n‘bulk’ (whole sample) or ‘sieved’ (a fine fraction).\n\n\nfines_lt63\nREAL\n% finer than 63 um (clay + silt), else NULL.\n\n\nis_fine\nINTEGER\n1 if fines_lt63 &gt;= 50% (mud-dominated), 0 if not, NULL if unknown.\n\n\nfines_basis\nTEXT\nHow fines_lt63 was derived."
+  },
+  {
+    "objectID": "db-schema-clean.html#grain_size_fraction-per-fraction-measurement",
+    "href": "db-schema-clean.html#grain_size_fraction-per-fraction-measurement",
+    "title": "Clean schema",
+    "section": "grain_size_fraction (per fraction measurement)",
+    "text": "grain_size_fraction (per fraction measurement)\nThe grain-size distribution moved out of measurement.\n\n\n\n\n\n\n\n\n\n\nColumn\nType\nMeaning\n\n\n\n\nsubsample_id\nINTEGER\n-&gt; subsample.\n\n\nsymbol\nTEXT\nThe source’s grain-size code.\n\n\nmatrix\nTEXT\nSample fraction (where recorded).\n\n\nlo_um\nREAL\nLower size bound, um.\n\n\nhi_um\nREAL\nUpper size bound, um (NULL = open, e.g. gravel).\n\n\nvalue_pct\nREAL\nCorrected mass fraction, %."
+  },
+  {
+    "objectID": "db-schema-clean.html#unchanged-tables",
+    "href": "db-schema-clean.html#unchanged-tables",
+    "title": "Clean schema",
+    "section": "Unchanged tables",
+    "text": "Unchanged tables\nelement (symbol, name, category), dataset, site, event (date, year, gear; datetime/time dropped), subsample (depth in cm + supporting-data flags), and method (analysis + lod/loq with limit_unit) carry over from slim with the harmonisations applied."
+  },
+  {
+    "objectID": "db-schema-clean.html#what-changed-from-slim",
+    "href": "db-schema-clean.html#what-changed-from-slim",
+    "title": "Clean schema",
+    "section": "What changed from slim",
+    "text": "What changed from slim\n\n\n\n\n\n\n\n\n\nChange\nDetail\n\n\n\n\nRows removed\nOut of range, invalid, below limit, wet weight, source-specific QC.\n\n\nDuplicates / replicates collapsed\nOne value each; replicates gain value_sd + n_rep.\n\n\nmeasurement is chemistry only\nGrain-size moved to grain_size / grain_size_fraction.\n\n\nFlag columns dropped\nThe slim QC flags were consumed by the cleaning and are not carried.\n\n\nDepths in cm\nICES-DOME converted from metres; Vannmiljø corrupt depths nulled.\n\n\nSymbols / units unified\nICES names; TOC -&gt; CORG; value_std in mg/kg added."
+  },
+  {
+    "objectID": "flagging-common.html",
+    "href": "flagging-common.html",
+    "title": "Common Flags",
+    "section": "",
+    "text": "After each source is reshaped into the common slim schema, a series of flagging steps annotates the data for quality control and review. Every step adds columns; it never changes or deletes a value. Suspicious or redundant records are marked so they can be inspected; the actual removal of unnecessary rows is a later Data Cleaning step, performed once the grain-size analysis is complete.\nThis page covers the common flags: the columns that all five sources end up with, applied the same way everywhere. The measurand classes and supporting-data availability are on the companion Class Summary page; the source-native flags that only some sources report (e.g. detection flags and outlier flags) are summarised on the Source specific page. Each section below gives a short description followed by a cross-source count table, computed directly from the current slim databases."
+  },
+  {
+    "objectID": "flagging-common.html#invalid-values",
+    "href": "flagging-common.html#invalid-values",
+    "title": "Common Flags",
+    "section": "1. Invalid values",
+    "text": "1. Invalid values\nAdds an area_flag to site and an invalid_flag to measurement. A site is flagged outside Europe when its coordinates fall outside the European seas of interest. A measurement is flagged negative when its value is below zero, or over-range when it exceeds the physical ceiling of 100 % of the sample mass for its unit (e.g. a mg/kg value above 1,000,000). These are candidates for review, not automatic deletions.\n\n\n\n\n\nSource\nSites\nOutside Europe\nMeasurements\nNegative\nOver-range\n\n\n\n\nMareano\n397\n0\n41,789\n0\n0\n\n\nVannmiljø\n17,961\n1\n107,867\n0\n301\n\n\nICES-DOME\n6,660\n0\n158,858\n0\n1,488\n\n\nMUDAB\n1,838\n0\n63,642\n0\n1,352\n\n\n4Demon\n160\n0\n6,739\n0\n0\n\n\nTotal\n27,016\n1\n378,895\n0\n3,141"
+  },
+  {
+    "objectID": "flagging-common.html#duplicates-technical-replicates",
+    "href": "flagging-common.html#duplicates-technical-replicates",
+    "title": "Common Flags",
+    "section": "2. Duplicates & technical replicates",
+    "text": "2. Duplicates & technical replicates\nAdds a dup_flag to measurement. Records sharing the same location, date, depth, element and unit are grouped: if the value is also identical the row is a duplicate; if the value differs it is a technical replicate. Both are kept for now and flagged for the clean stage to resolve.\n\n\n\n\n\nSource\nMeasurements\nDuplicate\nTechnical replicate\n\n\n\n\nMareano\n41,789\n50\n22\n\n\nVannmiljø\n107,867\n3,484\n13,093\n\n\nICES-DOME\n158,858\n8,029\n55,581\n\n\nMUDAB\n63,642\n1,604\n19,356\n\n\n4Demon\n6,739\n22\n1,081\n\n\nTotal\n378,895\n13,189\n89,133"
+  },
+  {
+    "objectID": "flagging-common.html#multi-layer-samplings",
+    "href": "flagging-common.html#multi-layer-samplings",
+    "title": "Common Flags",
+    "section": "3. Multi-layer samplings",
+    "text": "3. Multi-layer samplings\nAdds n_layers and multi_flag to event. An event with more than one subsample is a multi-layer sampling (e.g. a sliced core), while a single depth interval is a single grab. This is derived from the data, since the same gear yields both. The last column is the largest number of layers seen in any single event.\n\n\n\n\n\nSource\nEvents\nMulti-layer\nSingle grab\nMax layers\n\n\n\n\nMareano\n404\n183\n221\n43\n\n\nVannmiljø\n25,188\n1,156\n24,032\n30\n\n\nICES-DOME\n13,576\n491\n13,085\n43\n\n\nMUDAB\n6,033\n18\n6,015\n20\n\n\n4Demon\n1,480\n0\n1,480\n1\n\n\nTotal\n46,681\n1,848\n44,833\n43"
+  },
+  {
+    "objectID": "flagging-common.html#below-detection-quantification-limit",
+    "href": "flagging-common.html#below-detection-quantification-limit",
+    "title": "Common Flags",
+    "section": "4. Below detection / quantification limit",
+    "text": "4. Below detection / quantification limit\nAdds a below_loq flag to measurement, folding each source’s own detection flag (Mareano below_lld, Vannmiljø operator, the ICES qflag, 4Demon limit_flag) into one common marker. A value of 1 means the measurement is an uncertain “less-than” reading below the limit of detection or quantification, the main set of rows to remove in the clean stage.\n\n\n\n\n\nSource\nMeasurements\nBelow LOQ\nShare\n\n\n\n\nMareano\n41,789\n4,583\n11.0%\n\n\nVannmiljø\n107,867\n2,339\n2.2%\n\n\nICES-DOME\n158,858\n2,361\n1.5%\n\n\nMUDAB\n63,642\n1,312\n2.1%\n\n\n4Demon\n6,739\n53\n0.8%"
+  },
+  {
+    "objectID": "flagging-common.html#below-limit-numeric-cross-check",
+    "href": "flagging-common.html#below-limit-numeric-cross-check",
+    "title": "Common Flags",
+    "section": "5. Below limit (numeric cross-check)",
+    "text": "5. Below limit (numeric cross-check)\nAdds a below_loq_num flag to measurement: a numeric check that compares each value against the method’s own detection/quantification limit (LOQ, else LOD/LLD), as a cross-check on the label above, since a source’s detection label can be wrong. A value below the limit is flagged 1; at the limit exactly it defers to the label; a value above it is 0. Where the method table records no numeric limit the value cannot be assessed and the flag stays NULL (all of 4Demon, most of Vannmiljø).\nThe Missed by label column counts values the numeric check flags as below-limit that the source did not label, the errors this step is meant to catch.\n\n\n\n\n\nSource\nAssessable\nBelow limit\nMissed by label\n\n\n\n\nMareano\n28,729\n4,610\n27\n\n\nVannmiljø\n10,226\n123\n56\n\n\nICES-DOME\n87,803\n1,905\n275\n\n\nMUDAB\n35,036\n953\n25\n\n\n4Demon\n0\n0\n0\n\n\nTotal\n161,794\n7,591\n383"
+  },
+  {
+    "objectID": "flagging-common.html#dry-wet-weight",
+    "href": "flagging-common.html#dry-wet-weight",
+    "title": "Common Flags",
+    "section": "6. Dry / wet weight",
+    "text": "6. Dry / wet weight\nAdds a weight_basis flag to measurement, harmonising each source’s stated sample weight basis into dry or wet weight. It is read from the source’s own signal: a basis column (ICES-DOME / MUDAB / 4Demon) or the unit suffix (Vannmiljø mg/kg dw); Mareano reports everything on a dry-weight basis. Only chemistry (target / reference / organic) is classified: the counts below are over chemistry measurements, and grain-size composition is left unset (the dry/wet distinction is a concentration concept, handled separately for grain size). Dry weight is the sediment standard, so the few wet rows are the ones to review.\n\n\n\n\n\nSource\nChemistry\nDry\nWet\n\n\n\n\nMareano\n28,729\n28,729\n0\n\n\nVannmiljø\n93,065\n93,065\n0\n\n\nICES-DOME\n103,143\n102,780\n363\n\n\nMUDAB\n42,377\n42,377\n0\n\n\n4Demon\n6,739\n6,739\n0\n\n\nTotal\n274,053\n273,690\n363\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nNo rows have been deleted. These flags will drive the removal of uncertain, duplicated, and out-of-scope records when the clean databases are built."
+  },
+  {
+    "objectID": "flagging-source-specific.html",
+    "href": "flagging-source-specific.html",
+    "title": "Source Specific",
+    "section": "",
+    "text": "The Common Flags are applied the same way to all five sources. Some sources also carry native columns of their own that the common steps do not cover. Where those add information worth keeping, they are folded into a per-source src_flag on measurement (NULL = pass), so the clean stage can review or remove them. This is a source-by-source step (13 onward in the pipeline); so far Vannmiljø, ICES-DOME and 4Demon have one."
+  },
+  {
+    "objectID": "flagging-source-specific.html#vannmiljø",
+    "href": "flagging-source-specific.html#vannmiljø",
+    "title": "Source Specific",
+    "section": "Vannmiljø",
+    "text": "Vannmiljø\nVannmiljø records two native columns on each measurement that the other sources do not: operator (a relational sign on the value) and filtered. The below-detection meaning of operator (&lt; and ND) is already captured by the common below_loq flag, so it is not repeated here. What remains is folded into src_flag:\n\n\n\n\n\n\n\n\n\n\nsrc_flag\nSource column\nMeaning\n\n\n\n\nabove_range\noperator = ‘&gt;’\nRight-censored ‘greater-than’ reading: the value is only a lower bound.\n\n\nfiltered\nfiltered = 1\nFiltered-water sample rather than bulk sediment.\n\n\n\n\n\nNeither is scoped to a measurand class. In particular above_range also applies to grain-size fractions reported as “greater than” a value, not just chemistry. The counts below are the current Vannmiljø slim database.\n\n\n\n\n\nsrc_flag\nRows\n\n\n\n\n(pass)\n107,850\n\n\nabove_range\n15\n\n\nfiltered\n2\n\n\n\n\n\nFor context, the full operator breakdown (its &lt; / ND values feed below_loq, &gt; feeds src_flag, = is an ordinary quantified value):\n\n\n\n\n\nOperator\nRows\n\n\n\n\n=\n105,513\n\n\n&lt;\n2,321\n\n\nND\n18\n\n\n&gt;\n15"
+  },
+  {
+    "objectID": "flagging-source-specific.html#ices-dome",
+    "href": "flagging-source-specific.html#ices-dome",
+    "title": "Source Specific",
+    "section": "ICES-DOME",
+    "text": "ICES-DOME\nICES-DOME’s detection/quantification flag (qflag) and dry/wet basis (basis) are already handled by the common below_loq and weight_basis steps. Its vflag, the originator’s value-quality flag, is folded into src_flag (meanings from the ICES code_lookup table):\n\n\n\n\n\n\n\n\n\n\nsrc_flag\nSource column\nMeaning\n\n\n\n\nsuspect\nvflag = ‘S’\nSuspect value: considered suspect by the originator on the basis of quality control or instrument performance.\n\n\ncalculated\nvflag = ‘C’\nCalculated value: a derived value rather than a direct measurement.\n\n\n\n\n\nvflag = 'A' (acceptable value) and rows with no vflag pass. The counts below are the current ICES-DOME slim database.\n\n\n\n\n\nsrc_flag\nRows\n\n\n\n\n(pass)\n158,774\n\n\nsuspect\n68\n\n\ncalculated\n16\n\n\n\n\n\nICES-DOME’s remaining native columns are not folded in: dcflag holds ICES DATSU screening / conversion codes (mostly benign unit conversions), and metcu / uncrt / matrix are uncertainty and sample-fraction metadata rather than quality flags."
+  },
+  {
+    "objectID": "flagging-source-specific.html#demon",
+    "href": "flagging-source-specific.html#demon",
+    "title": "Source Specific",
+    "section": "4Demon",
+    "text": "4Demon\n4Demon’s detection-limit flag (limit_flag) and dry/wet basis (basis) are already handled by the common steps. Unlike the other two sources, it carries several independent quality flags that can co-occur on one measurement, so its src_flag holds a comma-joined set of tokens (meanings from the 4Demon metadata):\n\n\n\n\n\n\n\n\n\n\nToken\nSource column\nMeaning\n\n\n\n\nsuspect\nvalue_flag = 1\nSuspect value.\n\n\ninvalid\nvalue_flag = 3\nInvalid value.\n\n\nrange_check\nrange_check_flag = 1\nOutside 4Demon’s expected range.\n\n\noutlier_moderate\noutlier_extreme_flag = 1\nModerate per-parameter outlier.\n\n\noutlier_extreme\noutlier_extreme_flag = 2\nExtreme per-parameter outlier.\n\n\noutlier_stdev\noutlier_stdev_flag = 1\nOutlier by a standard-deviation threshold.\n\n\n\n\n\nvalue_flag = 2 (below detection) is not folded here: it is already covered by below_loq. A row can carry more than one token, e.g. suspect,range_check. The counts below are the current 4Demon slim database (each distinct combination, then the total flagged).\n\n\n\n\n\nsrc_flag\nRows\n\n\n\n\n(pass)\n5,118\n\n\noutlier_moderate\n530\n\n\nrange_check\n472\n\n\noutlier_extreme\n287\n\n\nrange_check,outlier_moderate\n59\n\n\nsuspect\n58\n\n\nrange_check,outlier_extreme\n50\n\n\nrange_check,outlier_extreme,outlier_stdev\n29\n\n\nsuspect,outlier_moderate\n26\n\n\nsuspect,range_check\n23\n\n\nsuspect,outlier_extreme\n23\n\n\noutlier_extreme,outlier_stdev\n22\n\n\nsuspect,range_check,outlier_moderate\n14\n\n\nsuspect,range_check,outlier_extreme,outlier_stdev\n13\n\n\ninvalid,range_check,outlier_moderate\n6\n\n\nsuspect,range_check,outlier_extreme\n4\n\n\ninvalid\n3\n\n\ninvalid,range_check,outlier_extreme\n1\n\n\ninvalid,range_check\n1\n\n\n\n\n\n\n\n\n\n\nMeasurements\nFlagged (any token)\n\n\n\n\n6,739\n1,621"
+  },
+  {
+    "objectID": "flagging-source-specific.html#other-sources",
+    "href": "flagging-source-specific.html#other-sources",
+    "title": "Source Specific",
+    "section": "Other sources",
+    "text": "Other sources\nMUDAB carries native columns too (basis, matrix, qflag); its qflag and basis are already handled by the common steps, and it has no further native quality flags to fold. Its matrix is sample-fraction metadata, retained but not a src_flag.\n\n\n\n\n\n\nNote\n\n\n\nNo rows have been deleted. src_flag marks source-native records for review; the actual removal happens later, when the clean databases are built."
+  },
+  {
+    "objectID": "grain-size-fraction.html",
+    "href": "grain-size-fraction.html",
+    "title": "Sample Fraction (matrix)",
+    "section": "",
+    "text": "Sediment can be analysed whole (a bulk grab) or after sieving to a grain-size fraction, and a trace-element value means something different depending on which. Three sources record this on each measurement in a matrix column: ICES-DOME, MUDAB, and 4Demon. Mareano and Vannmiljø have no matrix; for those the fraction has to come from the grain-size measurements themselves (a later page).\nThis page reads the raw matrix values, harmonises them into a common sieved/bulk class with a sieve cutoff in micrometres, and shows an important subtlety: within one sample the chemistry and the grain-size are usually measured on different fractions."
+  },
+  {
+    "objectID": "grain-size-fraction.html#what-the-matrix-codes-mean",
+    "href": "grain-size-fraction.html#what-the-matrix-codes-mean",
+    "title": "Sample Fraction (matrix)",
+    "section": "1. What the matrix codes mean",
+    "text": "1. What the matrix codes mean\nICES-DOME and MUDAB use ICES MATRX codes of the form SED&lt;mesh&gt;, “sediment, the fraction finer than &lt;mesh&gt; micrometres” (SEDtot being the whole untreated sample). Meanings are from each pilot’s code_lookup table.\n\n\n\n\n\nmatrix\nMeaning\nCutoff (um)\n\n\n\n\nSEDtot\nUntreated total (whole sample)\nnone (bulk)\n\n\nSED2000\nFiner than 2000 um\n2000\n\n\nSED1000\nFiner than 1000 um\n1000\n\n\nSED500\nFiner than 500 um\n500\n\n\nSED90\nFiner than 90 um\n90\n\n\nSED63\nFiner than 63 um\n63\n\n\nSED62\nFiner than 62 um\n62\n\n\nSED20\nFiner than 20 um\n20\n\n\nPK_default\nPlaceholder, fraction not stated\nunspecified\n\n\n\n\n\n4Demon records only FS (a sieved fraction) or US (unsieved), and keeps the actual cutoff in a separate fraction_range column (micrometres), which is carried through to the slim database.\n\n\n\n\n\nmatrix\nfraction_range\nMeaning\n\n\n\n\nUS\n0-10000\nUnsieved (whole sample)\n\n\nFS\n0-2000\nSieved finer than 2000 um\n\n\nFS\n0-500\nSieved finer than 500 um\n\n\nFS\n0-63\nSieved finer than 63 um\n\n\nFS\n0-37\nSieved finer than 37 um\n\n\n\n\n\nThere is no SED64 code in any source: the fine cutoff of interest sits at 62 to 63 micrometres (SED63, SED62, FS 0-63)."
+  },
+  {
+    "objectID": "grain-size-fraction.html#harmonised-sieved-bulk-class",
+    "href": "grain-size-fraction.html#harmonised-sieved-bulk-class",
+    "title": "Sample Fraction (matrix)",
+    "section": "2. Harmonised sieved / bulk class",
+    "text": "2. Harmonised sieved / bulk class\nEvery measurement is placed in one of three classes from its matrix (and, for 4Demon, its fraction_range):\n\n\n\n\n\n\n\n\n\n\nClass\nDefinition\nCodes\n\n\n\n\nbulk\nWhole sample, or coarse sieving at or above 1000 um\nSEDtot, US, SED2000, SED1000, FS 0-2000\n\n\nsieved\nSieved to a fine fraction below 1000 um\nSED500, SED90, SED63, SED62, SED20, FS 0-500 / 0-63 / 0-37\n\n\nunspecified\nNo fraction stated\nPK_default, missing matrix\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nCoarse sieving to &lt;2 mm or &lt;1 mm (SED2000, SED1000, FS 0-2000) is the routine step that removes gravel and shell before analysis, not a fine-fraction separation, so it is counted as bulk-equivalent here rather than as a sieved fraction."
+  },
+  {
+    "objectID": "grain-size-fraction.html#fraction-by-source-and-measurement-class",
+    "href": "grain-size-fraction.html#fraction-by-source-and-measurement-class",
+    "title": "Sample Fraction (matrix)",
+    "section": "3. Fraction by source and measurement class",
+    "text": "3. Fraction by source and measurement class\nBecause chemistry and grain-size are often run on different fractions (see section 5), the split is shown separately for each. Counts are measurements.\n\n\n\n\n\nSource\nMeasurement class\nbulk\nsieved\nunspecified\n\n\n\n\n4Demon\nChemistry\n1,325\n5,414\n0\n\n\nICES-DOME\nChemistry\n40,481\n62,662\n0\n\n\nICES-DOME\nGrain-size\n54,973\n742\n0\n\n\nMUDAB\nChemistry\n7,306\n35,060\n11\n\n\nMUDAB\nGrain-size\n21,161\n100\n4"
+  },
+  {
+    "objectID": "grain-size-fraction.html#chemistry-sieve-cutoffs",
+    "href": "grain-size-fraction.html#chemistry-sieve-cutoffs",
+    "title": "Sample Fraction (matrix)",
+    "section": "4. Chemistry sieve cutoffs",
+    "text": "4. Chemistry sieve cutoffs\nFor the chemistry measurements, this is the actual sieve cutoff (micrometres) the element value was measured on. The &lt;63 um fine fraction is the one of primary interest.\n\n\n\n\n\nSource\n37\n63\n500\n20\n62\n90\n\n\n\n\n4Demon\n222\n5,144\n48\n0\n0\n0\n\n\nICES-DOME\n0\n37,925\n12\n24,311\n326\n88\n\n\nMUDAB\n0\n6,592\n0\n28,468\n0\n0\n\n\n\n\n\nChemistry measured as bulk (whole or coarse) for comparison:\n\n\n\n\n\nSource\nBulk chemistry rows\n\n\n\n\n4Demon\n1,325\n\n\nICES-DOME\n40,481\n\n\nMUDAB\n7,306"
+  },
+  {
+    "objectID": "grain-size-fraction.html#the-fraction-differs-between-chemistry-and-grain-size",
+    "href": "grain-size-fraction.html#the-fraction-differs-between-chemistry-and-grain-size",
+    "title": "Sample Fraction (matrix)",
+    "section": "5. The fraction differs between chemistry and grain-size",
+    "text": "5. The fraction differs between chemistry and grain-size\nWithin a single subsample the chemistry and the grain-size are usually not on the same fraction: grain-size is almost always reported on the whole sample (SEDtot), while chemistry is run on a sieved fine fraction. So there is no single “matrix per sample”; the fraction has to be read per measurement, and separately for chemistry versus grain-size.\n\n\n\n\n\n\n\n\n\n\n\n\nSource\nSubsamples with both\nSame matrix\nDifferent matrix\n% different\n\n\n\n\nICES-DOME\n10,125\n2,421\n7,704\n76\n\n\nMUDAB\n5,287\n4\n5,283\n100\n\n\n\n\n\nThe most common mismatch is chemistry on a sieved fraction while the grain-size is reported on the bulk sample:\n\n\n\n\n\nChemistry\nGrain-size\nSubsamples\n\n\n\n\nSED20\nSEDtot\n3,855\n\n\nSED20|SED2000|SED63\nSEDtot\n3,079\n\n\nSED20|SED2000\nSEDtot\n2,709\n\n\nSED63\nSEDtot\n853\n\n\nSED2000\nSEDtot\n717\n\n\nSED2000|SED63\nSEDtot\n695\n\n\nSED63\nSED63|SEDtot\n405\n\n\nSED20\nSED2000\n173\n\n\nSED20|SED63|SEDtot\nSEDtot\n138\n\n\nSED2000|SED63|SEDtot\nSEDtot\n89\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nNothing is deleted or recomputed on this page. It only reads and classifies the recorded matrix. Recalculating noisy grain-size fractions, and deriving the &lt;63 um fraction for Mareano and Vannmiljø, come in later pages of this section."
+  }
+]
