@@ -1,0 +1,12 @@
+/.quarto/
+/_site/
+**/*.quarto_ipynb
+
+# Local SQLite databases (downloaded from the releases, see README)
+/data/
+
+# RStudio / R session files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
