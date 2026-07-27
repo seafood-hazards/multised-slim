@@ -35,12 +35,13 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
+            any::rmarkdown
+            any::knitr
             any::DBI
             any::RSQLite
             any::dplyr
             any::tidyr
             any::tibble
-            any::knitr
 
       # pre-render (download-dbs.R) fetches the databases; the R chunks read
       # them; post-render (cleanup-dbs.R) removes them (CI=true on the runner).
