@@ -27,24 +27,22 @@ Published site: <https://seafood-hazards.github.io/multised-slim/>
 ### 2. Download the databases
 
 The pages read ten SQLite databases from a `data/db/` folder (git-ignored): a
-**slim** and a **clean** database for each of the five sources. The slim
-databases are published on each source's pilot release; the clean databases are
-published on this repository's releases.
+**slim** and a **clean** database for each of the five sources, all published on
+this repository's [releases](https://github.com/seafood-hazards/multised-slim/releases).
+The slim databases here are the *flagged* version the site reads (the common
+schema plus the quality-control and marking flags); the original pre-flag slim
+databases live on each source's pilot release and are not needed to build the
+site.
 
 ```bash
 mkdir -p data/db
 cd data/db
 
-# Slim databases (each source's pilot release)
-curl -LO https://github.com/seafood-hazards/mareano-pilot/releases/download/v0.1.16/mareano_slim.sqlite
-curl -LO https://github.com/seafood-hazards/vannmiljo-pilot/releases/download/v0.1.16/vannmiljo_slim.sqlite
-curl -LO https://github.com/seafood-hazards/ices-dome-pilot/releases/download/v0.1.17/ices_dome_slim.sqlite
-curl -LO https://github.com/seafood-hazards/mudab-pilot/releases/download/v0.1.4/mudab_slim.sqlite
-curl -LO https://github.com/seafood-hazards/4demon-pilot/releases/download/v0.1.0/4demon_slim.sqlite
-
-# Clean databases (this repository's release)
+# Slim (flagged) and clean databases, from this repository's v0.1.0 release
 for s in mareano vannmiljo ices_dome mudab 4demon; do
-  curl -LO https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/${s}_clean.sqlite
+  for gen in slim clean; do
+    curl -LO https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/${s}_${gen}.sqlite
+  done
 done
 ```
 
@@ -60,8 +58,8 @@ mudab_slim.sqlite      mudab_clean.sqlite
 
 The **DB Design** and **Flagging** pages read the slim databases; the **Clean
 Databases** pages read the clean ones (a couple compare the two), so all ten are
-needed to render every page. The download links for the slim databases are also
-listed on the site's [Database Downloads](database-downloads.qmd) page.
+needed to render every page. Download links for all of them are also listed on
+the site's [Database Downloads](database-downloads.qmd) page.
 
 ### 3. Render the site
 
