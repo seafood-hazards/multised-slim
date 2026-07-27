@@ -1,5 +1,7 @@
 project:
   type: website
+  pre-render: _scripts/download-dbs.R
+  post-render: _scripts/cleanup-dbs.R
   render:
     - "*.qmd"
     - "!CHANGELOG.md"

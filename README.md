@@ -34,6 +34,12 @@ schema plus the quality-control and marking flags); the original pre-flag slim
 databases live on each source's pilot release and are not needed to build the
 site.
 
+You do not have to download these by hand: the site's `pre-render` step
+(`_scripts/download-dbs.R`) fetches any that are missing into `data/db/` whenever
+you `quarto render`, and the `post-render` step (`_scripts/cleanup-dbs.R`) removes
+them again only in CI. The commands below are for fetching the databases without
+rendering.
+
 ```bash
 mkdir -p data/db
 cd data/db
@@ -71,27 +77,28 @@ quarto preview
 
 The output lands in `_site/` (git-ignored).
 
-### 4. Publish (optional)
+### 4. Publishing
 
-GitHub Pages runs Jekyll by default, which ignores the `_`-prefixed asset
-directories Quarto emits, so an empty `.nojekyll` file must sit at the served
-root. The simplest route is Quarto's built-in publisher, which handles this for
-you and pushes the rendered site to a `gh-pages` branch:
+The site is published automatically by GitHub Actions
+(`.github/workflows/publish.yml`) on every push to `main`: the workflow installs R
+and Quarto, renders the site (the `pre-render` step downloads the databases and
+the `post-render` step deletes them), and deploys to GitHub Pages. Enable it once
+under **Settings > Pages > Source = GitHub Actions**; after that no local render
+or manual upload is needed.
 
-```bash
-quarto publish gh-pages
-```
-
-Alternatively, copy the **contents** of `_site/` (including a `.nojekyll` file) to
-wherever you serve the site.
+To point the site at a different database release, change the tag in
+`_scripts/download-dbs.R` (`DB_RELEASE`, default `v0.1.0`) and update the links on
+the [Database Downloads](database-downloads.qmd) page.
 
 ## Repository layout
 
 ```
-*.qmd            the site pages
-_quarto.yml      site configuration and navigation
-styles.css       small style overrides
-image/           images used by the pages
-data/db/         the SQLite databases (git-ignored; you download these)
-_site/           rendered output (git-ignored)
+*.qmd                     the site pages
+_quarto.yml               site configuration; pre-render / post-render hooks
+_scripts/                 database download (pre-render) and cleanup (post-render)
+.github/workflows/        the GitHub Actions publish workflow
+styles.css                small style overrides
+image/                    images used by the pages
+data/db/                  the SQLite databases (git-ignored; auto-downloaded)
+_site/                    rendered output (git-ignored)
 ```
