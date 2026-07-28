@@ -29,6 +29,18 @@ qry <- function(stem, sql) {
   on.exit(dbDisconnect(con)); as_tibble(dbGetQuery(con, sql))
 }
 kfmt <- function(df, ...) kable(df, format.args = list(big.mark = ","), ...)
+
+# Distinct symbols / units across the chemistry: measurement (targets + Fe/Al)
+# plus organic_carbon (CORG / TOC*), where that table exists.
+chem_vals <- function(stem, col) {
+  con <- dbConnect(SQLite(), file.path(db_dir, paste0(stem, "_clean.sqlite")))
+  on.exit(dbDisconnect(con))
+  q <- sprintf("SELECT DISTINCT %s AS v FROM measurement WHERE %s IS NOT NULL", col, col)
+  if ("organic_carbon" %in% dbListTables(con))
+    q <- paste0(q, sprintf(
+      " UNION SELECT DISTINCT %s AS v FROM organic_carbon WHERE %s IS NOT NULL", col, col))
+  sort(dbGetQuery(con, q)$v)
+}
 ```
 
 ## 1. Symbols
@@ -40,9 +52,8 @@ folded (`Fe` becomes `FE`). The chemistry symbols now present per source:
 
 ```{r}
 bind_rows(lapply(seq_len(nrow(srcs)), function(i)
-  qry(srcs$stem[i], "SELECT DISTINCT symbol FROM measurement ORDER BY symbol") |>
-    summarise(Symbols = paste(symbol, collapse = ", ")) |>
-    mutate(Source = srcs$Source[i]))) |>
+  tibble(Source = srcs$Source[i],
+         Symbols = paste(chem_vals(srcs$stem[i], "symbol"), collapse = ", ")))) |>
   select(Source, Symbols) |>
   kable()
 ```
@@ -56,9 +67,8 @@ Original chemistry units still present:
 
 ```{r}
 bind_rows(lapply(seq_len(nrow(srcs)), function(i)
-  qry(srcs$stem[i], "SELECT DISTINCT unit FROM measurement WHERE unit IS NOT NULL ORDER BY unit") |>
-    summarise(`Original units` = paste(unit, collapse = ", ")) |>
-    mutate(Source = srcs$Source[i]))) |>
+  tibble(Source = srcs$Source[i],
+         `Original units` = paste(chem_vals(srcs$stem[i], "unit"), collapse = ", ")))) |>
   select(Source, `Original units`) |>
   kable()
 ```

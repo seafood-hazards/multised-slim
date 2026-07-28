@@ -32,6 +32,25 @@ qry <- function(stem, gen, sql) {
 }
 scal <- function(stem, gen, sql) as.integer(qry(stem, gen, sql)[[1]])
 kfmt <- function(df, ...) kable(df, format.args = list(big.mark = ","), ...)
+
+# Clean chemistry now lives in measurement (targets + Fe/Al) plus organic_carbon;
+# these helpers recombine them so they line up with the slim chemistry counts.
+has_org <- function(stem) {
+  con <- dbConnect(SQLite(), file.path(db_dir, paste0(stem, "_clean.sqlite")))
+  on.exit(dbDisconnect(con)); "organic_carbon" %in% dbListTables(con)
+}
+clean_chem_n <- function(stem) {
+  n <- scal(stem, "clean", "SELECT COUNT(*) FROM measurement")
+  if (has_org(stem)) n <- n + scal(stem, "clean", "SELECT COUNT(*) FROM organic_carbon")
+  n
+}
+clean_by_el <- function(stem) {
+  x <- qry(stem, "clean", "SELECT symbol AS Element, COUNT(*) AS n FROM measurement GROUP BY symbol")
+  if (has_org(stem))
+    x <- bind_rows(x, qry(stem, "clean",
+      "SELECT symbol AS Element, COUNT(*) AS n FROM organic_carbon GROUP BY symbol"))
+  x |> group_by(Element) |> summarise(n = sum(n), .groups = "drop")
+}
 ```
 
 ## 1. Overall
@@ -45,7 +64,7 @@ chem_slim <- "SELECT COUNT(*) FROM measurement m JOIN element e ON m.symbol=e.sy
 srcs |>
   rowwise() |>
   mutate(`Chemistry (slim)`  = scal(stem, "slim",  chem_slim),
-         `Chemistry (clean)` = scal(stem, "clean", "SELECT COUNT(*) FROM measurement")) |>
+         `Chemistry (clean)` = clean_chem_n(stem)) |>
   ungroup() |>
   mutate(`% retained` = round(100 * `Chemistry (clean)` / `Chemistry (slim)`)) |>
   select(-stem) |>
@@ -64,15 +83,13 @@ slim_by_el <- "SELECT m.symbol AS Element, e.category AS Category, COUNT(*) AS n
                FROM measurement m JOIN element e ON m.symbol = e.symbol
                WHERE e.category IN ('target','reference','organic')
                GROUP BY m.symbol, e.category"
-clean_by_el <- "SELECT symbol AS Element, COUNT(*) AS n FROM measurement GROUP BY symbol"
-
 cat("::: {.panel-tabset}\n\n")
 for (i in seq_len(nrow(srcs))) {
   s <- qry(srcs$stem[i], "slim", slim_by_el) |>
     mutate(Element = ifelse(toupper(Element) == "TOC", "CORG", toupper(Element))) |>
     group_by(Element, Category) |>
     summarise(n_slim = sum(n), .groups = "drop")
-  cl <- qry(srcs$stem[i], "clean", clean_by_el) |>
+  cl <- clean_by_el(srcs$stem[i]) |>
     transmute(Element = toupper(Element), n_clean = n)
   tbl <- s |>
     left_join(cl, by = "Element") |>

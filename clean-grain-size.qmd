@@ -1,16 +1,18 @@
 ---
-title: "Grain size"
-subtitle: "Sieved/bulk, the <63 µm fines, and the fraction distribution"
+title: "Grain-size tables"
+subtitle: "The sediment fraction, the <63 µm fines, and the fraction distribution"
 ---
 
 ```{css, echo=FALSE}
 th { white-space: nowrap; }
 ```
 
-Step 3 moves grain-size out of the measurement table into two tables: a
-per-subsample **`grain_size`** summary (sieved or bulk, the `<63 µm` fines, and a
-fine/not flag) and a **`grain_size_fraction`** detail table (the size
-distribution). 4Demon has no grain-size and so does not appear here.
+Step 3 records the sediment fraction each measurement sits on (bulk or sieved) and
+moves the grain-size distribution into its own **`grain_size_fraction`** table. The
+per-subsample `<63 µm` fines (`fines_lt63`) and a fraction summary
+(`frac_class` / `sieve_um`) live on **`subsample`**; the authoritative per-value
+fraction is on `measurement`. 4Demon has no grain-size distribution, but does carry
+the sediment fraction.
 
 ```{r}
 #| label: setup
@@ -22,9 +24,10 @@ library(tidyr)
 library(knitr)
 
 db_dir <- "data/db"
-gsrcs <- tibble(
-  Source = c("Mareano", "Vannmiljø", "ICES-DOME", "MUDAB"),
-  stem   = c("mareano", "vannmiljo", "ices_dome", "mudab"))
+all_srcs <- tibble(
+  Source = c("Mareano", "Vannmiljø", "ICES-DOME", "MUDAB", "4Demon"),
+  stem   = c("mareano", "vannmiljo", "ices_dome", "mudab", "4demon"))
+gsrcs <- all_srcs[all_srcs$stem != "4demon", ]   # sources with grain-size
 
 qry <- function(stem, sql) {
   con <- dbConnect(SQLite(), file.path(db_dir, paste0(stem, "_clean.sqlite")))
@@ -33,39 +36,41 @@ qry <- function(stem, sql) {
 kfmt <- function(df, ...) kable(df, format.args = list(big.mark = ","), ...)
 ```
 
-## 1. Sieved or bulk
+## 1. Sediment fraction (bulk / sieved / mixed)
 
-Whether each grain-size sample is a whole (bulk) sediment or a sieved fraction.
-For ICES-DOME and MUDAB this comes from the sample `matrix`; Mareano samples are
-all bulk (confirmed); Vannmiljø has no sieving metadata and is taken as bulk.
-Subsamples where this could not be determined were dropped.
+Whether a subsample's target metals were measured on bulk (whole sediment or
+`<2 mm`) or a sieved fine fraction. `mixed` marks the subsamples whose targets span
+both fractions; `None` means the subsample has no target chemistry to classify. The
+per-measurement `frac_class` + `sieve_um` on `measurement` give the exact fraction
+of every value.
 
 ```{r}
-bind_rows(lapply(seq_len(nrow(gsrcs)), function(i)
-  qry(gsrcs$stem[i], "SELECT frac_class, COUNT(*) n FROM grain_size GROUP BY frac_class") |>
-    mutate(Source = gsrcs$Source[i]))) |>
+bind_rows(lapply(seq_len(nrow(all_srcs)), function(i)
+  qry(all_srcs$stem[i],
+      "SELECT COALESCE(frac_class,'None') frac_class, COUNT(*) n
+       FROM subsample GROUP BY frac_class") |>
+    mutate(Source = all_srcs$Source[i]))) |>
   pivot_wider(names_from = frac_class, values_from = n, values_fill = 0) |>
-  relocate(Source) |>
+  select(Source, any_of(c("bulk", "sieved", "mixed", "None"))) |>
   kfmt()
 ```
 
 ## 2. The <63 µm fines
 
 `fines_lt63` is the percentage of material finer than 63 µm (the clay + silt
-"mud"). `is_fine` marks samples that are mud-dominated (at least 50 %). Samples
-with a class but no usable fines value are `NA`.
+"mud"), carried on `subsample` for the sources with grain-size. Mud-dominated
+samples are those at least 50 % fines.
 
 ```{r}
 bind_rows(lapply(seq_len(nrow(gsrcs)), function(i)
   qry(gsrcs$stem[i], "SELECT
-        COUNT(*) n_samples,
-        SUM(is_fine=1) fine, SUM(is_fine=0) not_fine, SUM(is_fine IS NULL) unknown,
+        SUM(fines_lt63 IS NOT NULL) with_fines,
+        SUM(fines_lt63 >= 50) mud_dominated,
         ROUND(AVG(fines_lt63),1) mean_fines
-      FROM grain_size") |>
+      FROM subsample") |>
     mutate(Source = gsrcs$Source[i]))) |>
-  transmute(Source, `Grain-size samples` = n_samples,
-            `Fine (>=50%)` = fine, `Not fine` = not_fine, `Fines unknown` = unknown,
-            `Mean fines (%)` = mean_fines) |>
+  transmute(Source, `Subsamples with fines` = with_fines,
+            `Mud-dominated (>=50%)` = mud_dominated, `Mean fines (%)` = mean_fines) |>
   kfmt()
 ```
 

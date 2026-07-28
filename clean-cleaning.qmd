@@ -47,10 +47,16 @@ removal_counts <- function(stem) {
 clean_stats <- function(stem) {
   con <- dbConnect(SQLite(), file.path(db_dir, paste0(stem, "_clean.sqlite")))
   on.exit(dbDisconnect(con))
-  as_tibble(dbGetQuery(con,
+  # Chemistry now lives in measurement (targets + Fe/Al) plus organic_carbon;
+  # count both so the total matches the slim chemistry removed above.
+  src <- if ("organic_carbon" %in% dbListTables(con))
+    "(SELECT n_rep, value_uncrt FROM measurement
+      UNION ALL SELECT n_rep, value_uncrt FROM organic_carbon)"
+  else "measurement"
+  as_tibble(dbGetQuery(con, paste0(
     "SELECT COUNT(*) kept, SUM(n_rep=1) single, SUM(n_rep>1) averaged,
             MAX(n_rep) max_rep, SUM(value_uncrt IS NOT NULL) with_uncrt
-     FROM measurement"))
+     FROM ", src)))
 }
 ```
 
