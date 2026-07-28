@@ -37,7 +37,7 @@ tribble(
   ~Step,           ~Does,
   "1. Harmonise",  "Uniform symbols, units, depths (cm), tools, LOD/LOQ (ICES-DOME names).",
   "2. Clean",      "Remove failed-QC rows; keep one of each duplicate; average technical replicates.",
-  "3. Annotate",   "Label the sediment fraction (bulk/sieved); split organic carbon and grain-size into their own tables."
+  "3. Annotate",   "Label the sediment fraction (bulk/sieved); split grain-size into its own table."
 ) |> kable()
 ```
 
@@ -50,7 +50,7 @@ tribble(
   "Vannmiljø", "Norway",        "steps 1-3",
   "ICES-DOME", "International",  "steps 1-3 (naming reference)",
   "MUDAB",     "Germany",        "steps 1-3",
-  "4Demon",    "Belgium",        "steps 1-3 (no organic carbon / grain-size)"
+  "4Demon",    "Belgium",        "steps 1-3 (no grain-size)"
 ) |> kable()
 ```
 
@@ -66,8 +66,7 @@ value each.
 ## Clean database tables
 
 Every clean database has the seven shared tables; the grain-size sources add
-`grain_size_fraction`, and the sources with organic carbon add `organic_carbon`
-(4Demon has neither):
+`grain_size_fraction` (4Demon has no grain-size):
 
 ```{r}
 tribble(
@@ -75,9 +74,8 @@ tribble(
   "element",              "Symbol, name, measurand category, CAS (ICES names).",
   "dataset / site",       "Provenance and location (site carries depth).",
   "event",                "Sampling occasion: date, year, gear.",
-  "subsample",            "Depth interval (cm), supporting-data flags, sediment-fraction summary (bulk/sieved/mixed + sieve_um), and the <63 um fines.",
-  "measurement",          "The 7 targets + Fe/Al: value + standardised value_std (mg/kg), value_sd / n_rep, value_uncrt, and the fraction (frac_class + sieve_um).",
-  "organic_carbon",       "CORG / TOC* split out of measurement (same columns).",
+  "subsample",            "Depth interval (cm), supporting-data flags, target fraction summary (target_frac_class bulk/sieved/mixed + target_sieve_um), and the <63 um fines.",
+  "measurement",          "All chemistry (targets, Fe/Al, organic carbon): value + value_std (mg/kg), value_sd / n_rep, value_uncrt, and the fraction (matrix, frac_class, sieve_um).",
   "method",               "Analysis + LOD/LOQ with their unit.",
   "grain_size_fraction",  "The grain-size distribution moved out of measurement."
 ) |> kable()

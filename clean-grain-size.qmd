@@ -47,10 +47,10 @@ of every value.
 ```{r}
 bind_rows(lapply(seq_len(nrow(all_srcs)), function(i)
   qry(all_srcs$stem[i],
-      "SELECT COALESCE(frac_class,'None') frac_class, COUNT(*) n
-       FROM subsample GROUP BY frac_class") |>
+      "SELECT COALESCE(target_frac_class,'None') target_frac_class, COUNT(*) n
+       FROM subsample GROUP BY target_frac_class") |>
     mutate(Source = all_srcs$Source[i]))) |>
-  pivot_wider(names_from = frac_class, values_from = n, values_fill = 0) |>
+  pivot_wider(names_from = target_frac_class, values_from = n, values_fill = 0) |>
   select(Source, any_of(c("bulk", "sieved", "mixed", "None"))) |>
   kfmt()
 ```

@@ -30,16 +30,13 @@ qry <- function(stem, sql) {
 }
 kfmt <- function(df, ...) kable(df, format.args = list(big.mark = ","), ...)
 
-# Distinct symbols / units across the chemistry: measurement (targets + Fe/Al)
-# plus organic_carbon (CORG / TOC*), where that table exists.
+# Distinct symbols / units across the chemistry (all in measurement: targets,
+# Fe/Al, and organic carbon CORG / TOC*).
 chem_vals <- function(stem, col) {
   con <- dbConnect(SQLite(), file.path(db_dir, paste0(stem, "_clean.sqlite")))
   on.exit(dbDisconnect(con))
-  q <- sprintf("SELECT DISTINCT %s AS v FROM measurement WHERE %s IS NOT NULL", col, col)
-  if ("organic_carbon" %in% dbListTables(con))
-    q <- paste0(q, sprintf(
-      " UNION SELECT DISTINCT %s AS v FROM organic_carbon WHERE %s IS NOT NULL", col, col))
-  sort(dbGetQuery(con, q)$v)
+  sort(dbGetQuery(con, sprintf(
+    "SELECT DISTINCT %s AS v FROM measurement WHERE %s IS NOT NULL", col, col))$v)
 }
 ```
 

@@ -9,23 +9,22 @@ th { white-space: nowrap; }
 
 Each `\<source\>_clean.sqlite` has the seven shared tables carried from the slim
 schema (`element`, `dataset`, `site`, `event`, `subsample`, `measurement`,
-`method`), plus, where the source has the data, `organic_carbon` and
-`grain_size_fraction`. 4Demon has neither (no organic carbon, no grain-size). The
-main differences from the slim schema: `measurement` holds only the target
-elements and the Fe/Al normalisers, with aggregated values and a bulk/sieved
-fraction label; organic carbon and grain-size sit in their own tables; and depths
-are in cm.
+`method`), plus `grain_size_fraction` where the source has grain-size (not 4Demon).
+The main differences from the slim schema: `measurement` carries aggregated values
+and a bulk/sieved fraction label; grain-size composition sits in its own table; and
+depths are in cm.
 
 ```{r}
 library(tibble)
 library(knitr)
 ```
 
-## measurement (target elements + Fe/Al)
+## measurement
 
-One row per cleaned measurement of a target element or a Fe/Al normaliser. Failed-QC
-rows are gone; duplicates and technical replicates are collapsed. Organic carbon and
-grain-size composition have moved to their own tables.
+One row per cleaned chemistry measurement: the 7 target elements, the Fe/Al
+normalisers, and organic carbon (CORG / TOC*), told apart by `element.category`.
+Failed-QC rows are gone; duplicates and technical replicates are collapsed.
+Grain-size composition has moved to `grain_size_fraction`.
 
 ```{r}
 tribble(
@@ -40,50 +39,44 @@ tribble(
   "value_sd",      "REAL",   "SD across technical replicates, else NULL.",
   "n_rep",         "INTEGER","Number of distinct replicate values averaged (1 = single).",
   "value_uncrt",   "REAL",   "Analytical uncertainty, mg/kg (ICES-DOME only), else NULL.",
+  "matrix",        "TEXT",   "Raw ICES sediment-fraction code (provenance), where recorded.",
   "frac_class",    "TEXT",   "Sediment fraction measured: 'bulk' (whole sample or <2mm) or 'sieved' (a fine sub-fraction).",
   "sieve_um",      "REAL",   "Sieve cutoff in um for sieved rows (e.g. 63, 20), NULL for bulk.",
   "method_id",     "INTEGER","-> method."
 ) |> kable()
 ```
 
-`frac_class` / `sieve_um` are derived from the source's sediment-fraction code (the
-ICES `matrix`), which is not carried forward. Bulk versus sieved is recorded per
-measurement because it varies within a subsample: a sample's metals and its organic
-carbon, and even different target metals, are often measured on different fractions.
-
-## organic_carbon
-
-One row per organic carbon measurement (CORG, TOC, TOC63), split out of
-`measurement` as supplementary (not a main analyte). Same columns as `measurement`.
-Absent for 4Demon.
+`frac_class` / `sieve_um` are derived from `matrix` (kept alongside). Bulk versus
+sieved is recorded per measurement because it varies within a subsample: a sample's
+metals and its organic carbon, and even different target metals, are often measured
+on different fractions.
 
 ## subsample
 
 One row per subsample (a depth slice of a sampling event), with depth, the
-supporting-data flags, a per-subsample sediment-fraction summary, and the mud
-content.
+supporting-data flags, a target-fraction summary, and the mud content.
 
 ```{r}
 tribble(
-  ~Column,       ~Type,     ~Meaning,
-  "subsample_id","INTEGER", "Primary key.",
-  "event_id",    "INTEGER", "-> event.",
-  "depth_from",  "REAL",    "Top of the slice, cm.",
-  "depth_to",    "REAL",    "Bottom of the slice, cm.",
-  "fe_exist",    "INTEGER", "1/0: an Fe value exists for this subsample.",
-  "al_exist",    "INTEGER", "1/0: an Al value exists.",
-  "org_exist",   "INTEGER", "1/0: an organic carbon value exists.",
-  "comp_exist",  "INTEGER", "1/0: grain-size composition exists.",
-  "frac_class",  "TEXT",    "Fraction summary of the subsample's target measurements: 'bulk', 'sieved', or 'mixed' (targets span both). NULL if no target chemistry.",
-  "sieve_um",    "REAL",    "Target sieve cutoff where unambiguous, else NULL.",
-  "fines_lt63",  "REAL",    "% finer than 63 um (clay + silt mud content), else NULL.",
-  "fines_basis", "TEXT",    "How fines_lt63 was derived."
+  ~Column,             ~Type,     ~Meaning,
+  "subsample_id",      "INTEGER", "Primary key.",
+  "event_id",          "INTEGER", "-> event.",
+  "depth_from",        "REAL",    "Top of the slice, cm.",
+  "depth_to",          "REAL",    "Bottom of the slice, cm.",
+  "fe_exist",          "INTEGER", "1/0: an Fe value exists for this subsample.",
+  "al_exist",          "INTEGER", "1/0: an Al value exists.",
+  "org_exist",         "INTEGER", "1/0: an organic carbon value exists.",
+  "comp_exist",        "INTEGER", "1/0: grain-size composition exists.",
+  "target_frac_class", "TEXT",    "Fraction summary of the subsample's target measurements: 'bulk', 'sieved', or 'mixed' (targets span both). NULL if no target chemistry.",
+  "target_sieve_um",   "REAL",    "Target sieve cutoff where unambiguous, else NULL.",
+  "fines_lt63",        "REAL",    "% finer than 63 um (clay + silt mud content), else NULL.",
+  "fines_basis",       "TEXT",    "How fines_lt63 was derived."
 ) |> kable()
 ```
 
-The authoritative bulk/sieved value is per measurement; `subsample.frac_class` is a
-convenience summary, with `mixed` marking the (few) subsamples whose target metals
-span both fractions.
+The authoritative bulk/sieved value is per measurement (`measurement.frac_class`);
+`subsample.target_frac_class` is a convenience summary over the targets, with
+`mixed` marking the (few) subsamples whose target metals span both fractions.
 
 ## grain_size_fraction (per fraction measurement)
 
@@ -116,8 +109,8 @@ tribble(
   ~Change,                              ~Detail,
   "Rows removed",                       "Out of range, invalid, below limit, wet weight, source-specific QC.",
   "Duplicates / replicates collapsed",  "One value each; replicates gain value_sd + n_rep.",
-  "measurement is targets + Fe/Al",     "Organic carbon to organic_carbon; grain-size composition to grain_size_fraction.",
-  "Sediment fraction as frac_class",    "The matrix code becomes frac_class (bulk/sieved) + sieve_um; a bulk/sieved/mixed summary is added to subsample.",
+  "Grain-size out of measurement",      "Grain-size composition moves to grain_size_fraction; all chemistry (incl. organic carbon) stays in measurement.",
+  "Sediment fraction as frac_class",    "matrix gains frac_class (bulk/sieved) + sieve_um; a target bulk/sieved/mixed summary is added to subsample.",
   "Flag columns dropped",               "The slim QC flags were consumed by the cleaning and are not carried.",
   "Depths in cm",                       "ICES-DOME converted from metres; Vannmiljo corrupt depths nulled.",
   "Symbols / units unified",            "ICES names; TOC -> CORG; value_std in mg/kg; CAS added to element."

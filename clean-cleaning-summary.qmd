@@ -32,25 +32,6 @@ qry <- function(stem, gen, sql) {
 }
 scal <- function(stem, gen, sql) as.integer(qry(stem, gen, sql)[[1]])
 kfmt <- function(df, ...) kable(df, format.args = list(big.mark = ","), ...)
-
-# Clean chemistry now lives in measurement (targets + Fe/Al) plus organic_carbon;
-# these helpers recombine them so they line up with the slim chemistry counts.
-has_org <- function(stem) {
-  con <- dbConnect(SQLite(), file.path(db_dir, paste0(stem, "_clean.sqlite")))
-  on.exit(dbDisconnect(con)); "organic_carbon" %in% dbListTables(con)
-}
-clean_chem_n <- function(stem) {
-  n <- scal(stem, "clean", "SELECT COUNT(*) FROM measurement")
-  if (has_org(stem)) n <- n + scal(stem, "clean", "SELECT COUNT(*) FROM organic_carbon")
-  n
-}
-clean_by_el <- function(stem) {
-  x <- qry(stem, "clean", "SELECT symbol AS Element, COUNT(*) AS n FROM measurement GROUP BY symbol")
-  if (has_org(stem))
-    x <- bind_rows(x, qry(stem, "clean",
-      "SELECT symbol AS Element, COUNT(*) AS n FROM organic_carbon GROUP BY symbol"))
-  x |> group_by(Element) |> summarise(n = sum(n), .groups = "drop")
-}
 ```
 
 ## 1. Overall
@@ -64,7 +45,7 @@ chem_slim <- "SELECT COUNT(*) FROM measurement m JOIN element e ON m.symbol=e.sy
 srcs |>
   rowwise() |>
   mutate(`Chemistry (slim)`  = scal(stem, "slim",  chem_slim),
-         `Chemistry (clean)` = clean_chem_n(stem)) |>
+         `Chemistry (clean)` = scal(stem, "clean", "SELECT COUNT(*) FROM measurement")) |>
   ungroup() |>
   mutate(`% retained` = round(100 * `Chemistry (clean)` / `Chemistry (slim)`)) |>
   select(-stem) |>
@@ -89,7 +70,8 @@ for (i in seq_len(nrow(srcs))) {
     mutate(Element = ifelse(toupper(Element) == "TOC", "CORG", toupper(Element))) |>
     group_by(Element, Category) |>
     summarise(n_slim = sum(n), .groups = "drop")
-  cl <- clean_by_el(srcs$stem[i]) |>
+  cl <- qry(srcs$stem[i], "clean",
+            "SELECT symbol AS Element, COUNT(*) AS n FROM measurement GROUP BY symbol") |>
     transmute(Element = toupper(Element), n_clean = n)
   tbl <- s |>
     left_join(cl, by = "Element") |>
