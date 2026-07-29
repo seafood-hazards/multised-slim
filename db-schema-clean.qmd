@@ -7,7 +7,7 @@ subtitle: "The tables and columns of the clean databases"
 th { white-space: nowrap; }
 ```
 
-Each `\<source\>_clean.sqlite` has the seven shared tables carried from the slim
+Each `<source>_clean.sqlite` has the seven shared tables carried from the slim
 schema (`element`, `dataset`, `site`, `event`, `subsample`, `measurement`,
 `method`), plus `grain_size_fraction` where the source has grain-size (not 4Demon).
 The main differences from the slim schema: `measurement` carries aggregated values

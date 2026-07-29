@@ -12,7 +12,7 @@ uniformly formatted databases built by applying the flags documented elsewhere o
 this site. This section documents how they are made. The later, separate
 analyses performed *on* the clean databases are presented on their own site.
 
-Each source becomes one `\<source\>_clean.sqlite`, still per-source (a cross-source
+Each source becomes one `<source>_clean.sqlite`, still per-source (a cross-source
 merge is a later step). The clean stage runs three steps:
 
 ```{r}
