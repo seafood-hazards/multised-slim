@@ -40,7 +40,7 @@ tribble(
   "n_rep",         "INTEGER","Number of distinct replicate values averaged (1 = single).",
   "value_uncrt",   "REAL",   "Analytical uncertainty, mg/kg (ICES-DOME only), else NULL.",
   "matrix",        "TEXT",   "Raw ICES sediment-fraction code (provenance), where recorded.",
-  "frac_class",    "TEXT",   "Sediment fraction measured: 'bulk' (whole sample or <2mm) or 'sieved' (a fine sub-fraction).",
+  "frac_class",    "TEXT",   "Sediment fraction measured: 'bulk' (whole sample or the under-2 mm fraction) or 'sieved' (a fine sub-fraction).",
   "sieve_um",      "REAL",   "Sieve cutoff in um for sieved rows (e.g. 63, 20), NULL for bulk.",
   "method_id",     "INTEGER","-> method."
 ) |> kable()
