@@ -23,6 +23,8 @@ The slim database is published in two versions, both using the same filename
 All five share the common [DB Schema (Slim)](./db-schema-slim.qmd): the same seven
 tables, differing only in a few source-specific columns.
 
+::: {.panel-tabset}
+
 ### Flagged (site input)
 
 | Source | File | Download |
@@ -46,6 +48,8 @@ tables, differing only in a few source-specific columns.
 | 4Demon | `4demon_slim.sqlite` | [Download](https://github.com/seafood-hazards/4demon-pilot/releases/download/v0.1.0/4demon_slim.sqlite) |
 
 : Original slim databases {.striped .hover tbl-colwidths="[25,45,30]"}
+
+:::
 
 ## Clean databases
 
