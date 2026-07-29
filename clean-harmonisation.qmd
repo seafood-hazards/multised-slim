@@ -75,7 +75,9 @@ bind_rows(lapply(seq_len(nrow(srcs)), function(i)
 Sediment depth intervals are all converted to **centimetres**. The sources stored
 depth differently: ICES-DOME in metres (multiplied by 100), the others already in
 cm. Vannmiljø's corrupt depths (beyond a plausible core length, or inverted) were
-set to unknown.
+set to unknown; the row is kept (its chemistry is still valid) and marked
+`subsample.depth_flag = 'implausible'`, so a user can tell a removed depth from one
+the source never recorded, and drop these rows if their analysis needs depth.
 
 ```{r}
 bind_rows(lapply(seq_len(nrow(srcs)), function(i)

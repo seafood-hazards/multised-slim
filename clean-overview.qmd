@@ -74,7 +74,7 @@ tribble(
   "element",              "Symbol, name, measurand category, CAS (ICES names).",
   "dataset / site",       "Provenance and location (site carries depth).",
   "event",                "Sampling occasion: date, year, gear.",
-  "subsample",            "Depth interval (cm), supporting-data flags, target fraction summary (target_frac_class bulk/sieved/mixed + target_sieve_um), and the <63 um fines.",
+  "subsample",            "Depth interval (cm) with a depth_flag for removed depths, supporting-data flags, target fraction summary (target_frac_class bulk/sieved/mixed + target_sieve_um), and the <63 um fines.",
   "measurement",          "All chemistry (targets, Fe/Al, organic carbon): value + value_std (mg/kg), value_sd / n_rep, value_uncrt, and the fraction (matrix, frac_class, sieve_um).",
   "method",               "Analysis + LOD/LOQ with their unit.",
   "grain_size_fraction",  "The grain-size distribution moved out of measurement."
