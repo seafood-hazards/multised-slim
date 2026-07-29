@@ -67,7 +67,7 @@ tribble(
   "al_exist",          "INTEGER", "1/0: an Al value exists.",
   "org_exist",         "INTEGER", "1/0: an organic carbon value exists.",
   "comp_exist",        "INTEGER", "1/0: grain-size composition exists.",
-  "target_frac_class", "TEXT",    "Fraction summary of the subsample's target measurements: 'bulk', 'sieved', or 'mixed' (targets span both). NULL if no target chemistry.",
+  "target_frac_class", "TEXT",    "Fraction summary of the subsample's target measurements: 'bulk', 'sieved', or 'mixed' (targets span both). NULL if no target-metal measurement (grain-size-only, or normaliser/organic-only subsamples).",
   "target_sieve_um",   "REAL",    "Target sieve cutoff where unambiguous, else NULL.",
   "fines_lt63",        "REAL",    "% finer than 63 um (clay + silt mud content), else NULL.",
   "fines_basis",       "TEXT",    "How fines_lt63 was derived."

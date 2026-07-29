@@ -40,9 +40,11 @@ kfmt <- function(df, ...) kable(df, format.args = list(big.mark = ","), ...)
 
 Whether a subsample's target metals were measured on bulk (whole sediment or
 `<2 mm`) or a sieved fine fraction. `mixed` marks the subsamples whose targets span
-both fractions; `None` means the subsample has no target chemistry to classify. The
-per-measurement `frac_class` + `sieve_um` on `measurement` give the exact fraction
-of every value.
+both fractions; `None` means the subsample has no target-metal measurement to
+classify (a grain-size-only subsample, or one carrying only normalisers /
+organic carbon), so it is kept for that supporting data but has nothing to
+summarise here. The per-measurement `frac_class` + `sieve_um` on `measurement` give
+the exact fraction of every value.
 
 ```{r}
 bind_rows(lapply(seq_len(nrow(all_srcs)), function(i)
