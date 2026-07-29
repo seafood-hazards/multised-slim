@@ -5,6 +5,8 @@ subtitle: "The tables and columns of the clean databases"
 
 ```{css, echo=FALSE}
 th { white-space: nowrap; }
+.mermaid { max-width: 620px; margin-left: auto; margin-right: auto; }
+.mermaid svg { max-width: 100% !important; width: 100%; height: auto; }
 ```
 
 Each `<source>_clean.sqlite` has the seven shared tables carried from the slim
@@ -13,6 +15,67 @@ schema (`element`, `dataset`, `site`, `event`, `subsample`, `measurement`,
 The main differences from the slim schema: `measurement` carries aggregated values
 and a bulk/sieved fraction label; grain-size composition sits in its own table; and
 depths are in cm.
+
+## Schema diagram
+
+The hierarchy flows from `dataset` and `site` through `event` and `subsample` down
+to `measurement`. `element` is a lookup for both `method` and `measurement` via the
+`symbol` key. The new `grain_size_fraction` table (absent for 4Demon) hangs off
+`subsample` alongside `measurement`.
+
+```{mermaid}
+erDiagram
+  dataset   ||--o{ event               : "dataset_id"
+  site      ||--o{ event               : "site_id"
+  event     ||--o{ subsample           : "event_id"
+  subsample ||--o{ measurement         : "subsample_id"
+  subsample ||--o{ grain_size_fraction : "subsample_id"
+  element   ||--o{ measurement         : "symbol"
+  element   ||--o{ method              : "symbol"
+  method    ||--o{ measurement         : "method_id"
+
+  element {
+    TEXT symbol PK
+  }
+  dataset {
+    INTEGER dataset_id PK
+  }
+  site {
+    INTEGER site_id PK
+  }
+  event {
+    INTEGER event_id PK
+    INTEGER dataset_id FK
+    INTEGER site_id FK
+  }
+  subsample {
+    INTEGER subsample_id PK
+    INTEGER event_id FK
+  }
+  measurement {
+    INTEGER measurement_id PK
+    INTEGER subsample_id FK
+    TEXT symbol FK
+    INTEGER method_id FK
+  }
+  method {
+    INTEGER method_id PK
+    TEXT symbol FK
+  }
+  grain_size_fraction {
+    INTEGER gsf_id PK
+    INTEGER subsample_id FK
+    TEXT symbol FK
+  }
+```
+
+Each entity above shows only its keys; the full column list for every table is in
+the sections below.
+
+::: {.callout-note}
+As in the slim schema, `measurement.symbol` is a denormalisation: it is derivable
+via `method_id -> method.symbol` but kept as a key for query efficiency.
+:::
 
 ```{r}
 library(tibble)
@@ -87,6 +150,7 @@ mass-fraction value. Absent for 4Demon.
 ```{r}
 tribble(
   ~Column,       ~Type,    ~Meaning,
+  "gsf_id",      "INTEGER","Primary key (surrogate; the subsample_id/symbol/matrix combination is not unique).",
   "subsample_id","INTEGER","-> subsample.",
   "symbol",      "TEXT",   "The source's grain-size code.",
   "matrix",      "TEXT",   "Sample fraction the value is a percentage of (where recorded).",
