@@ -95,12 +95,104 @@ tribble(
 ) |> kable()
 ```
 
-## Other tables
+## element
 
-`element` (symbol, `name`, category, `cas`), `dataset`, `site` (coordinates plus a
-`depth` column), `event` (date, year, descriptive `sampling_tool`; `datetime` /
-`time` dropped), and `method` (technique, `method_description`, lab, `lod` / `loq`
-with `limit_unit`) carry over from slim with the harmonisations applied.
+Lookup mapping each chemical symbol to its name, measurand category, and CAS
+number. Referenced by both `measurement` and `method` via `symbol`.
+
+```{r}
+tribble(
+  ~Column,    ~Type,  ~Meaning,
+  "symbol",   "TEXT", "Primary key: element in the ICES name (e.g. CO, CU, CORG).",
+  "name",     "TEXT", "Full element / measurand name.",
+  "category", "TEXT", "Measurand class: target / reference / organic / composition.",
+  "cas",      "TEXT", "CAS registry number, where known."
+) |> kable()
+```
+
+## dataset
+
+One row per data-collection campaign (the provenance of a set of events).
+
+```{r}
+tribble(
+  ~Column,          ~Type,     ~Meaning,
+  "dataset_id",     "INTEGER", "Primary key.",
+  "dataset_name",   "TEXT",    "Name of the data-collection campaign / dataset.",
+  "dataset_code",   "TEXT",    "Source-native dataset code, where recorded.",
+  "dataset_group",  "TEXT",    "Dataset grouping, where recorded.",
+  "source",         "TEXT",    "Source database name (e.g. Mareano, ICES-DOME).",
+  "source_type",    "TEXT",    "Kind of source (e.g. national, international).",
+  "url",            "TEXT",    "Source URL, where recorded.",
+  "doi",            "TEXT",    "Dataset DOI, where recorded.",
+  "country",        "TEXT",    "Country of origin.",
+  "region",         "TEXT",    "Marine region, where recorded.",
+  "institute",      "TEXT",    "Institute responsible for the data.",
+  "institute_code", "TEXT",    "Institute code, where recorded.",
+  "accessed",       "TEXT",    "Date the source was accessed."
+) |> kable()
+```
+
+## site
+
+One row per geographic location, keyed (in slim) on latitude/longitude rounded to
+three decimal places.
+
+```{r}
+tribble(
+  ~Column,         ~Type,     ~Meaning,
+  "site_id",       "INTEGER", "Primary key.",
+  "latitude",      "REAL",    "Latitude in decimal degrees.",
+  "longitude",     "REAL",    "Longitude in decimal degrees.",
+  "depth",         "REAL",    "Water depth (m), where recorded.",
+  "country",       "TEXT",    "Nearest country.",
+  "country_code",  "TEXT",    "ISO country code.",
+  "dist_to_coast", "REAL",    "Distance to nearest coastline (km).",
+  "municipality",  "TEXT",    "Nearest municipality.",
+  "sea_name",      "TEXT",    "Name of the sea or ocean body."
+) |> kable()
+```
+
+## event
+
+One row per sampling event (a single deployment of a gear at a site).
+
+```{r}
+tribble(
+  ~Column,         ~Type,     ~Meaning,
+  "event_id",      "INTEGER", "Primary key.",
+  "dataset_id",    "INTEGER", "-> dataset.",
+  "site_id",       "INTEGER", "-> site.",
+  "year",          "INTEGER", "Year of the sampling event.",
+  "date",          "TEXT",    "Date of the sampling event, where recorded.",
+  "sampling_tool", "TEXT",    "Sampling gear, descriptive name.",
+  "n_layers",      "INTEGER", "Number of subsamples (depth layers) under the event."
+) |> kable()
+```
+
+`datetime` / `time` from the slim schema are dropped in the clean stage.
+
+## method
+
+One row per distinct analytical method (technique, lab, and limits) for a symbol.
+
+```{r}
+tribble(
+  ~Column,              ~Type,     ~Meaning,
+  "method_id",          "INTEGER", "Primary key.",
+  "symbol",             "TEXT",    "-> element.",
+  "method",             "TEXT",    "Analytical technique (e.g. ICP-MS, ICP-AES).",
+  "method_description", "TEXT",    "Free-text method description, where recorded.",
+  "lab",                "TEXT",    "Laboratory that performed the analysis, where recorded.",
+  "lab_name",           "TEXT",    "Full laboratory name, where recorded.",
+  "lod",                "REAL",    "Limit of detection, where recorded (Mareano's lld maps here).",
+  "loq",                "REAL",    "Limit of quantification, where recorded.",
+  "limit_unit",         "TEXT",    "Reporting unit of lod / loq."
+) |> kable()
+```
+
+All five tables are identical in structure across the sources; values are absent
+(NULL) where a source does not record a column.
 
 ## What changed from slim
 
