@@ -48,8 +48,11 @@ until the final merge:
    can be reviewed.
 3. **clean**: the flags are applied (uncertain rows removed), units are
    harmonised, and normalisation (Fe/Al) and grain-size analyses are run.
-4. **merged**: the five clean databases are combined into a single database for
-   the background / pristine-sediment analysis.
+   Documented on the
+   [clean-analyses site](https://seafood-hazards.github.io/multised-clean/).
+4. **merged**: the five clean databases are combined into a single database, with
+   cross-source duplicates removed. Documented on the
+   [merged site](https://seafood-hazards.github.io/multised-merged/).
 
 ## What this site covers
 
