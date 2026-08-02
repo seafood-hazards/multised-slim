@@ -32,8 +32,8 @@ its own pilot site), then reshaped into the shared **slim** schema used here.
 
 ## Pipeline generations
 
-The data moves through four generations, each one SQLite database **per source**
-until the final merge:
+The data moves through five generations, one SQLite database **per source** until
+the merge, then a single database from there:
 
 1. **pilot**: each source's raw files parsed into a per-source database whose
    table structure follows that source. Documented on the individual pilot sites:
@@ -53,6 +53,10 @@ until the final merge:
 4. **merged**: the five clean databases are combined into a single database, with
    cross-source duplicates removed. Documented on the
    [merged site](https://seafood-hazards.github.io/multised-merged/).
+5. **refined**: a restructured, slimmed copy of the merged database with the
+   reusable analysis results baked in, an analysis-ready base for the pristine /
+   background-sediment work. Documented on the
+   [refined site](https://seafood-hazards.github.io/multised-refined/).
 
 ## What this site covers
 
