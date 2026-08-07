@@ -13,7 +13,7 @@ site's pages read the flagged one.
 The slim database is published in two versions, both using the same filename
 `<source>_slim.sqlite` (so keep them apart if you download both):
 
-- **Flagged** (this multised-slim v0.1.0 release): the common schema plus all the
+- **Flagged** (this repository's latest release): the common schema plus all the
   quality-control and marking flags (`category`, `value_std`, `dup_flag`,
   `below_loq`, `fines_lt63`, and the rest). This is the version the site's pages
   read, so use these to reproduce the site.
@@ -29,11 +29,11 @@ tables, differing only in a few source-specific columns.
 
 | Source | File | Download |
 |:-------|:-----|:---------|
-| Mareano | `mareano_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/mareano_slim.sqlite) |
-| Vannmiljø | `vannmiljo_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/vannmiljo_slim.sqlite) |
-| ICES-DOME | `ices_dome_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/ices_dome_slim.sqlite) |
-| MUDAB | `mudab_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/mudab_slim.sqlite) |
-| 4Demon | `4demon_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/4demon_slim.sqlite) |
+| Mareano | `mareano_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/mareano_slim.sqlite) |
+| Vannmiljø | `vannmiljo_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/vannmiljo_slim.sqlite) |
+| ICES-DOME | `ices_dome_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/ices_dome_slim.sqlite) |
+| MUDAB | `mudab_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/mudab_slim.sqlite) |
+| 4Demon | `4demon_slim.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/4demon_slim.sqlite) |
 
 : Flagged slim databases {.striped .hover tbl-colwidths="[25,45,30]"}
 
@@ -59,11 +59,11 @@ harmonised, grain-size split into its own tables. See how they are built under
 
 | Source | File | Download |
 |:-------|:-----|:---------|
-| Mareano | `mareano_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/mareano_clean.sqlite) |
-| Vannmiljø | `vannmiljo_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/vannmiljo_clean.sqlite) |
-| ICES-DOME | `ices_dome_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/ices_dome_clean.sqlite) |
-| MUDAB | `mudab_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/mudab_clean.sqlite) |
-| 4Demon | `4demon_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/4demon_clean.sqlite) |
+| Mareano | `mareano_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/mareano_clean.sqlite) |
+| Vannmiljø | `vannmiljo_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/vannmiljo_clean.sqlite) |
+| ICES-DOME | `ices_dome_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/ices_dome_clean.sqlite) |
+| MUDAB | `mudab_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/mudab_clean.sqlite) |
+| 4Demon | `4demon_clean.sqlite` | [Download](https://github.com/seafood-hazards/multised-slim/releases/latest/download/4demon_clean.sqlite) |
 
 : Clean databases {.striped .hover tbl-colwidths="[25,45,30]"}
 

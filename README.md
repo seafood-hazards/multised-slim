@@ -44,10 +44,10 @@ rendering.
 mkdir -p data/db
 cd data/db
 
-# Slim (flagged) and clean databases, from this repository's v0.1.0 release
+# Slim (flagged) and clean databases, from this repository's latest release
 for s in mareano vannmiljo ices_dome mudab 4demon; do
   for gen in slim clean; do
-    curl -LO https://github.com/seafood-hazards/multised-slim/releases/download/v0.1.0/${s}_${gen}.sqlite
+    curl -LO https://github.com/seafood-hazards/multised-slim/releases/latest/download/${s}_${gen}.sqlite
   done
 done
 ```
@@ -86,9 +86,23 @@ the `post-render` step deletes them), and deploys to GitHub Pages. Enable it onc
 under **Settings > Pages > Source = GitHub Actions**; after that no local render
 or manual upload is needed.
 
-To point the site at a different database release, change the tag in
-`_scripts/download-dbs.R` (`DB_RELEASE`, default `v0.1.0`) and update the links on
-the [Database Downloads](database-downloads.qmd) page.
+The site takes its databases from this repository's **latest** release, so no
+tag has to be edited when a new one is published. `releases/latest/download/`
+does not fall back to an older release, which means **every release must carry
+all ten databases as assets**, or the next CI render fails. Use the helper,
+which refuses to create the release if any asset is missing:
+
+```bash
+git tag -a vX.Y.Z -m "Release of vX.Y.Z" && git push origin vX.Y.Z
+_scripts/publish-release.sh vX.Y.Z          # before pushing main
+git push origin main
+```
+
+Set `DB_RELEASE` to pin an older release when reproducing a specific build:
+
+```bash
+DB_RELEASE=v0.1.0 quarto render
+```
 
 ## Repository layout
 
