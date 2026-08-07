@@ -49,6 +49,19 @@ tables, differing only in a few source-specific columns.
 
 : Original slim databases {.striped .hover tbl-colwidths="[25,45,30]"}
 
+::: {.callout-note}
+These five are historical exports from the pilot stage, kept for provenance, and
+they are not all contemporaneous. The Mareano file was missing from its release
+until August 2026 and was regenerated then with the current pipeline
+(`create_db("slim", "mareano", steps = 2)`), so its `site` table carries the
+seastamp location values while the other four still hold the ones the earlier
+`sf` implementation produced. Those four also carry a `qc_flag` column that the
+pipeline has since split into `area_flag` and `invalid_flag`.
+
+Any of them can be rebuilt from the matching pilot database with
+`create_db("slim", source, steps = 2)`.
+:::
+
 :::
 
 ## Clean databases
