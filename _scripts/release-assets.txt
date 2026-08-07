@@ -1,0 +1,17 @@
+# Assets every release must carry: the site downloads exactly these from
+# releases/latest/download/ at pre-render (see download-dbs.R). Keep the two
+# lists in step; publish-release.sh reads this one.
+
+# flagged slim databases
+mareano_slim.sqlite
+vannmiljo_slim.sqlite
+ices_dome_slim.sqlite
+mudab_slim.sqlite
+4demon_slim.sqlite
+
+# clean databases
+mareano_clean.sqlite
+vannmiljo_clean.sqlite
+ices_dome_clean.sqlite
+mudab_clean.sqlite
+4demon_clean.sqlite
