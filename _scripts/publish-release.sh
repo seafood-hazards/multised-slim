@@ -24,9 +24,12 @@ if [[ -z $tag ]]; then
   exit 64
 fi
 
-repo=seafood-hazards/multised-slim
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 manifest=$here/release-assets.txt
+
+# gh rejects --notes-from-tag together with --repo, so run from the repo root
+# and let gh infer the repository from the git remote.
+cd "$here/.."
 
 if [[ ! -f $manifest ]]; then
   echo "missing manifest: $manifest" >&2
@@ -54,12 +57,11 @@ if (( ${#missing[@]} )); then
   exit 65
 fi
 
-echo "Publishing $tag to $repo with ${#files[@]} assets:"
+echo "Publishing $tag with ${#files[@]} assets:"
 printf '  %s\n' "${files[@]}"
 echo
 
 gh release create "$tag" \
-  --repo "$repo" \
   --title "multised (slim) $tag" \
   --notes-from-tag \
   "${files[@]}"
